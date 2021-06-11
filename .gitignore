@@ -1,0 +1,8 @@
+# Via Swap files
+.*.sw[a-z]
+
+# Secret token for GitHub
+token.txt
+
+# Fetched logs.
+runs
