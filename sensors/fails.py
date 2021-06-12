@@ -3,14 +3,10 @@
 import sys
 import re
 
-# TODO: Does not catch the following cases:
-#  |
-#  | <...> replication/gh-3055-election-promote.test.lua                   Test timeout of 310 secs reached\t[ fail ]
-#  |
 # TODO: Does not catch cases, when [ fail ] is on another line.
 # Use statistics at the end?
 def failed_tests():
-    RE = re.compile(r'\[\d+\] +(?P<test>[^ ]+/[^ ]+) +(?P<conf>[^ ]+)? +\[ (?P<status>[^ ]+) \]')
+    RE = re.compile(r'\[\d+\] +(?P<test>[^ ]+/[^ ]+) +(?P<conf>[^ ]+)?.*\[ (?P<status>[^ ]+) \]')
     with open(sys.argv[1], 'r') as f:
         for line in f:
             m = RE.search(line)
