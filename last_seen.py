@@ -10,14 +10,23 @@ from subprocess import PIPE
 from subprocess import Popen
 import csv
 
-RE = re.compile(r'event: fail; test: (?P<test>[^ ]+)(; conf: (?P<conf>[^ ]+))?')
+SEP_RE = r'; '
+EVENT_RE = r'event: (?P<event>[^;]+)'
+TEST_RE = r'test: (?P<test>[^;]+)'
+CONF_RE = r'conf: (?P<conf>[^;]+)'
+RE = re.compile(
+    '^' +
+    EVENT_RE + SEP_RE +
+    TEST_RE + SEP_RE +
+    CONF_RE +
+    '$')
 
 def fails(log):
     with Popen(['sensors/fails.py', log], stdout=PIPE, encoding='utf-8') as process:
         for line in process.stdout:
             m = RE.match(line.rstrip())
             if m:
-                yield m['test'], m['conf']
+                yield m['event'], m['test'], m['conf']
 
 res = dict()
 for log in glob.glob('runs/*.log'):
@@ -30,14 +39,14 @@ for log in glob.glob('runs/*.log'):
     if branch != 'master' and not re.match('\d+\.\d+', branch):
         continue
 
-    for test, conf in fails(log):
+    for event, test, conf in fails(log):
         key = (test, conf)
         if key not in res or res[key][0] < timestamp:
-            res[key] = (timestamp, branch, log)
+            res[key] = (timestamp, branch, event, log)
 
 res = sorted(res.items(), key=lambda kv: kv[1][0], reverse=True)
 w = csv.writer(sys.stdout)
 for key, value in res:
     test, conf = key
-    timestamp, branch, log = value
-    w.writerow([test, conf, timestamp, branch, log])
+    timestamp, branch, event, log = value
+    w.writerow([test, conf, timestamp, branch, event, log])
