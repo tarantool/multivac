@@ -22,7 +22,7 @@ RE = re.compile(
     '$')
 
 def fails(log):
-    with Popen(['sensors/fails.py', log], stdout=PIPE, encoding='utf-8') as process:
+    with Popen(['multivac/sensors/fails.py', log], stdout=PIPE, encoding='utf-8') as process:
         for line in process.stdout:
             m = RE.match(line.rstrip())
             if m:
