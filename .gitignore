@@ -6,3 +6,7 @@ token.txt
 
 # Fetched logs.
 runs
+
+# Python bytecode.
+*.pyc
+__pycache__
