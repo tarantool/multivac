@@ -33,11 +33,11 @@ for log in glob.glob('runs/*.log'):
     for test, conf in fails(log):
         key = (test, conf)
         if key not in res or res[key][0] < timestamp:
-            res[key] = (timestamp, branch)
+            res[key] = (timestamp, branch, log)
 
 res = sorted(res.items(), key=lambda kv: kv[1][0], reverse=True)
 w = csv.writer(sys.stdout)
 for key, value in res:
     test, conf = key
-    timestamp, branch = value
-    w.writerow([test, conf, timestamp, branch])
+    timestamp, branch, log = value
+    w.writerow([test, conf, timestamp, branch, log])
