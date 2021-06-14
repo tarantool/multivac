@@ -45,6 +45,5 @@ def test_smart_status_iter(f):
 if __name__ == '__main__':
     with open(sys.argv[1], 'r') as f:
         for test, conf, status in test_smart_status_iter(f):
-            if status in ('fail', 'transient fail'):
-                print('event: {}; test: {}; conf: {}'.format(
-                    status, test, conf or 'null'))
+            print('event: test status; test: {}; conf: {}; status: {}'.format(
+                test, conf or 'null', status))

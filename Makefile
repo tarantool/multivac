@@ -4,4 +4,4 @@ default:
 
 .PHONY: test
 test:
-	python -m unittest test.sensors.fails_test
+	python -m unittest test.sensors.test_status_test

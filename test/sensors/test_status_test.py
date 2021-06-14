@@ -1,8 +1,8 @@
 import os
 import unittest
 import yaml
-from multivac.sensors.fails import test_status_iter
-from multivac.sensors.fails import test_smart_status_iter
+from multivac.sensors.test_status import test_status_iter
+from multivac.sensors.test_status import test_smart_status_iter
 
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))

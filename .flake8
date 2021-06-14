@@ -1,0 +1,3 @@
+[flake8]
+per-file-ignores =
+    test/sensors/test_status_test.py: E501

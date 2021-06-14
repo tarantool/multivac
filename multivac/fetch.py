@@ -96,9 +96,11 @@ session.headers.update({
     'Authorization': 'token ' + token,
 })
 
+
 def status(pages, pages_all, run_count, run_total, url):
     print('[pages {:2} / {:2}] [runs {:4} / {:4}] Download {}'.format(
           pages, pages_all, run_count, run_total, url), file=sys.stderr)
+
 
 def runs():
     url = 'https://api.github.com/repos/{}/{}/actions/runs'.format(owner, repo)

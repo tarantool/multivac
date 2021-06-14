@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import os
 import re
 import glob
 from datetime import datetime
@@ -10,23 +9,31 @@ from subprocess import PIPE
 from subprocess import Popen
 import csv
 
+
 SEP_RE = r'; '
 EVENT_RE = r'event: (?P<event>[^;]+)'
 TEST_RE = r'test: (?P<test>[^;]+)'
 CONF_RE = r'conf: (?P<conf>[^;]+)'
+STATUS_RE = r'status: (?P<status>[^;]+)'
 RE = re.compile(
     '^' +
     EVENT_RE + SEP_RE +
     TEST_RE + SEP_RE +
-    CONF_RE +
+    CONF_RE + SEP_RE +
+    STATUS_RE +
     '$')
 
+
 def fails(log):
-    with Popen(['multivac/sensors/fails.py', log], stdout=PIPE, encoding='utf-8') as process:
+    cmd = ['multivac/sensors/test_status.py', log]
+    with Popen(cmd, stdout=PIPE, encoding='utf-8') as process:
         for line in process.stdout:
             m = RE.match(line.rstrip())
-            if m:
-                yield m['event'], m['test'], m['conf']
+            if m and m['event'] == 'test status' and \
+                    m['status'] in ('fail', 'transient fail'):
+                conf = None if m['conf'] == 'null' else m['conf']
+                yield m['test'], conf, m['status']
+
 
 res = dict()
 for log in glob.glob('runs/*.log'):
@@ -36,17 +43,17 @@ for log in glob.glob('runs/*.log'):
     branch = run['head_branch']
     timestamp = datetime.fromisoformat(run['created_at'].rstrip('Z'))
 
-    if branch != 'master' and not re.match('\d+\.\d+', branch):
+    if branch != 'master' and not re.match(r'\d+\.\d+', branch):
         continue
 
-    for event, test, conf in fails(log):
+    for test, conf, status in fails(log):
         key = (test, conf)
         if key not in res or res[key][0] < timestamp:
-            res[key] = (timestamp, branch, event, log)
+            res[key] = (timestamp, branch, status, log)
 
 res = sorted(res.items(), key=lambda kv: kv[1][0], reverse=True)
 w = csv.writer(sys.stdout)
 for key, value in res:
     test, conf = key
-    timestamp, branch, event, log = value
-    w.writerow([test, conf, timestamp, branch, event, log])
+    timestamp, branch, status, log = value
+    w.writerow([timestamp, test, conf, branch, status, log])
