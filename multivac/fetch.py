@@ -46,6 +46,8 @@ def http_get(url, params=None):
 
     r = session.get(url, params=params)
 
+    print('{} Response HTTP status: {}'.format(timestamp(), r.status_code),
+          file=debug_log_fh)
     print('{} Response headers:\n{}'.format(timestamp(),
           json.dumps(dict(r.headers), indent=2)), file=debug_log_fh)
     if r.headers['content-type'] == 'application/zip':
