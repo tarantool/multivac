@@ -42,6 +42,17 @@ def test_smart_status_iter(f):
         yield test, conf, status
 
 
+def execute(log_filepath):
+    with open(log_filepath, 'r') as f:
+        for test, conf, status in test_smart_status_iter(f):
+            yield {
+                'event': 'test status',
+                'test': test,
+                'conf': conf,
+                'status': status,
+            }
+
+
 if __name__ == '__main__':
     with open(sys.argv[1], 'r') as f:
         for test, conf, status in test_smart_status_iter(f):
