@@ -7,6 +7,7 @@ import glob
 from datetime import datetime
 import json
 import csv
+import argparse
 
 
 # from subprocess import PIPE
@@ -30,6 +31,14 @@ import csv
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
 from multivac.sensors import test_status  # noqa: E402
+
+
+parser = argparse.ArgumentParser(
+    description='Search for fails and sort by last occurence')
+parser.add_argument('--branch', type=str, action='append',
+                    help='branch (may be passed several times)')
+args = parser.parse_args()
+branch_list = args.branch
 
 
 def fails(log):
@@ -57,24 +66,22 @@ for log in glob.glob('runs/*.log'):
     branch = run['head_branch']
     timestamp = datetime.fromisoformat(run['created_at'].rstrip('Z'))
 
-    if branch != 'master' and not re.match(r'^\d+\.\d+$', branch):
+    if branch not in branch_list:
         continue
 
     for test, conf, status in fails(log):
-        key = (test, conf)
+        key = (test, conf, status)
         if key not in res:
-            res[key] = (timestamp, branch, status, 1, log)
+            res[key] = (timestamp, branch, 1, log)
         elif res[key][0] < timestamp:
-            count = res[key][3]
-            res[key] = (timestamp, branch, status, count + 1, log)
+            res[key] = (timestamp, branch, res[key][2] + 1, log)
         else:
-            timestamp, branch, status, count, log = res[key]
-            res[key] = (timestamp, branch, status, count + 1, log)
+            res[key] = (res[key][0], res[key][1], res[key][2] + 1, res[key][3])
 
 res = sorted(res.items(), key=lambda kv: kv[1][0], reverse=True)
 w = csv.writer(sys.stdout)
 print('timestamp,test,conf,branch,status,count,log')
 for key, value in res:
-    test, conf = key
-    timestamp, branch, status, count, log = value
+    test, conf, status = key
+    timestamp, branch, count, log = value
     w.writerow([timestamp, test, conf, branch, status, count, log])
