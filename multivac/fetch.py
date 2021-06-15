@@ -38,10 +38,12 @@ def timestamp():
     return datetime.datetime.now().isoformat()
 
 
-def http_get(url):
+def http_get(url, params=None):
     """HTTP GET with logging to debug.log and raise on a bad HTTP status."""
     print('{} HTTP GET: {}'.format(timestamp(), url), file=debug_log_fh)
-    r = session.get(url)
+
+    r = session.get(url, params=params)
+
     print('{} Response headers:\n{}'.format(timestamp(),
           json.dumps(dict(r.headers), indent=2)), file=debug_log_fh)
     if r.headers['content-type'] == 'application/zip':
@@ -52,7 +54,9 @@ def http_get(url):
         response_text = r.text
     print('{} Response:\n{}'.format(timestamp(), response_text),
           file=debug_log_fh)
+
     r.raise_for_status()
+
     return r
 
 
@@ -126,9 +130,13 @@ def status(pages, pages_all, run_count, run_total, url):
 
 
 def runs():
+    params = {
+        # 100 is the maximum.
+        'per_page': 100,
+    }
     url = 'https://api.github.com/repos/{}/{}/actions/runs'.format(owner, repo)
     status(0, '??', 0, '??', url)
-    r = http_get(url)
+    r = http_get(url, params=params)
 
     run_count = 0
     for data in r.json()['workflow_runs']:
@@ -137,7 +145,7 @@ def runs():
 
     pages_all_str = '??'
     last_url = r.links['last']['url']
-    pages_all_match = re.search(r'page=(\d+)', last_url)
+    pages_all_match = re.search(r'[^_]page=(\d+)', last_url)
     if pages_all_match:
         pages_all_str = pages_all_match.group(1)
 
@@ -146,7 +154,7 @@ def runs():
         next_url = r.links['next']['url']
         run_total = r.json()['total_count']
         status(pages, pages_all_str, run_count, run_total, next_url)
-        r = http_get(next_url)
+        r = http_get(next_url, params=params)
         for data in r.json()['workflow_runs']:
             run_count += 1
             yield Run(data)
