@@ -128,7 +128,13 @@ class Run:
                     f.write(data)
 
 
-def status(pages, pages_all, run_count, run_total, url):
+def status(pages, pages_all, run_count, run_total, url, per_page):
+    # GitHub does not allow to fetch runs beyond first 1000.
+    if isinstance(pages_all, int):
+        pages_all = min(pages_all, 1000 // per_page)
+    if isinstance(run_total, int):
+        run_total = min(run_total, 1000)
+
     print('[pages {:2} / {:2}] [runs {:4} / {:4}] Download {}'.format(
           pages, pages_all, run_count, run_total, url), file=sys.stderr)
 
@@ -140,7 +146,7 @@ def runs():
         'branch': branch,
     }
     url = 'https://api.github.com/repos/{}/{}/actions/runs'.format(owner, repo)
-    status(0, '??', 0, '??', url)
+    status(0, '??', 0, '??', url, params['per_page'])
     r = http_get(url, params=params)
 
     run_count = 0
@@ -148,17 +154,18 @@ def runs():
         run_count += 1
         yield Run(data)
 
-    pages_all_str = '??'
+    pages_all = '??'
     last_url = r.links['last']['url']
     pages_all_match = re.search(r'[^_]page=(\d+)', last_url)
     if pages_all_match:
-        pages_all_str = pages_all_match.group(1)
+        pages_all = int(pages_all_match.group(1))
 
     pages = 1
     while 'next' in r.links:
         next_url = r.links['next']['url']
         run_total = r.json()['total_count']
-        status(pages, pages_all_str, run_count, run_total, next_url)
+        status(pages, pages_all, run_count, run_total, next_url,
+               params['per_page'])
         r = http_get(next_url, params=params)
         for data in r.json()['workflow_runs']:
             run_count += 1
