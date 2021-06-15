@@ -76,12 +76,14 @@ for log in glob.glob('runs/*.log'):
     if branch not in timestamps_max or timestamps_max[branch] < timestamp:
         timestamps_max[branch] = timestamp
 
+    url = run['html_url']
+
     for test, conf, status in fails(log):
         key = (test, conf, status)
         if key not in res:
-            res[key] = (timestamp, branch, 1, log)
+            res[key] = (timestamp, branch, 1, url)
         elif res[key][0] < timestamp:
-            res[key] = (timestamp, branch, res[key][2] + 1, log)
+            res[key] = (timestamp, branch, res[key][2] + 1, url)
         else:
             res[key] = (res[key][0], res[key][1], res[key][2] + 1, res[key][3])
 
@@ -95,8 +97,8 @@ print('', file=sys.stderr)
 
 res = sorted(res.items(), key=lambda kv: (kv[1][0], kv[1][2]), reverse=True)
 w = csv.writer(sys.stdout)
-print('timestamp,test,conf,branch,status,count,log')
+print('timestamp,test,conf,branch,status,count,url')
 for key, value in res:
     test, conf, status = key
-    timestamp, branch, count, log = value
-    w.writerow([timestamp, test, conf, branch, status, count, log])
+    timestamp, branch, count, url = value
+    w.writerow([timestamp, test, conf, branch, status, count, url])
