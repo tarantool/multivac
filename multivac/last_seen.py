@@ -73,6 +73,7 @@ for log in glob.glob('runs/*.log'):
 
 res = sorted(res.items(), key=lambda kv: kv[1][0], reverse=True)
 w = csv.writer(sys.stdout)
+print('timestamp,test,conf,branch,status,count,log')
 for key, value in res:
     test, conf = key
     timestamp, branch, status, count, log = value
