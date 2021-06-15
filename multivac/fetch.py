@@ -11,11 +11,13 @@ import datetime
 
 
 parser = argparse.ArgumentParser(description='Fetch GitHub Actions logs')
+parser.add_argument('--branch', type=str, help='branch (all if omitted)')
 parser.add_argument('repo_path', type=str, help='owner/repository')
 args = parser.parse_args()
 if '/' not in args.repo_path:
     raise ValueError('repo_path must be in the form owner/repository')
 owner, repo = args.repo_path.split('/', 1)
+branch = args.branch
 
 token_file = 'token.txt'
 if not os.path.exists(token_file):
@@ -133,6 +135,7 @@ def runs():
     params = {
         # 100 is the maximum.
         'per_page': 100,
+        'branch': branch,
     }
     url = 'https://api.github.com/repos/{}/{}/actions/runs'.format(owner, repo)
     status(0, '??', 0, '??', url)
