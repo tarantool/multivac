@@ -128,12 +128,18 @@ class Run:
                     f.write(data)
 
 
-def status(pages, pages_all, run_count, run_total, url, per_page):
-    # GitHub does not allow to fetch runs beyond first 1000.
-    if isinstance(pages_all, int):
-        pages_all = min(pages_all, 1000 // per_page)
-    if isinstance(run_total, int):
-        run_total = min(run_total, 1000)
+def status(pages, pages_all, run_count, run_total, url, params):
+    per_page = params['per_page']
+    branch = params['branch']
+
+    # GitHub does not allow to fetch runs beyond first 1000, when
+    # branch is passed. It seems, it is the limitation for search
+    # requests.
+    if branch is not None:
+        if isinstance(pages_all, int):
+            pages_all = min(pages_all, 1000 // per_page)
+        if isinstance(run_total, int):
+            run_total = min(run_total, 1000)
 
     print('[pages {:2} / {:2}] [runs {:4} / {:4}] Download {}'.format(
           pages, pages_all, run_count, run_total, url), file=sys.stderr)
@@ -146,7 +152,7 @@ def runs():
         'branch': branch,
     }
     url = 'https://api.github.com/repos/{}/{}/actions/runs'.format(owner, repo)
-    status(0, '??', 0, '??', url, params['per_page'])
+    status(0, '??', 0, '??', url, params)
     r = http_get(url, params=params)
 
     run_count = 0
@@ -164,8 +170,7 @@ def runs():
     while 'next' in r.links:
         next_url = r.links['next']['url']
         run_total = r.json()['total_count']
-        status(pages, pages_all, run_count, run_total, next_url,
-               params['per_page'])
+        status(pages, pages_all, run_count, run_total, next_url, params)
         r = http_get(next_url, params=params)
         for data in r.json()['workflow_runs']:
             run_count += 1
