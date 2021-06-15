@@ -161,7 +161,8 @@ for run in runs():
         print('Skip {}: {}'.format(run.id, run.status))
         continue
     if run.is_stored:
-        break
+        print('Skip {}: already stored'.format(run.id))
+        continue
     run.store()
 
 debug_log_fh.close()
