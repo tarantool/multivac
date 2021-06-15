@@ -58,16 +58,23 @@ def fails(log):
             yield event['test'], event['conf'], status
 
 
+timestamps_min = dict()
+timestamps_max = dict()
 res = dict()
 for log in glob.glob('runs/*.log'):
     meta_path = log.split('.', 1)[0] + '.json'
     with open(meta_path, 'r') as f:
         run = json.load(f)
     branch = run['head_branch']
-    timestamp = datetime.fromisoformat(run['created_at'].rstrip('Z'))
 
     if branch not in branch_list:
         continue
+
+    timestamp = datetime.fromisoformat(run['created_at'].rstrip('Z'))
+    if branch not in timestamps_min or timestamps_min[branch] > timestamp:
+        timestamps_min[branch] = timestamp
+    if branch not in timestamps_max or timestamps_max[branch] < timestamp:
+        timestamps_max[branch] = timestamp
 
     for test, conf, status in fails(log):
         key = (test, conf, status)
@@ -77,6 +84,14 @@ for log in glob.glob('runs/*.log'):
             res[key] = (timestamp, branch, res[key][2] + 1, log)
         else:
             res[key] = (res[key][0], res[key][1], res[key][2] + 1, res[key][3])
+
+print('Statistics for the following log intervals\n', file=sys.stderr)
+for branch in branch_list:
+    timestamp_min = timestamps_min[branch].isoformat()
+    timestamp_max = timestamps_max[branch].isoformat()
+    print('{}: [{}, {}]'.format(branch, timestamp_min, timestamp_max),
+          file=sys.stderr)
+print('', file=sys.stderr)
 
 res = sorted(res.items(), key=lambda kv: (kv[1][0], kv[1][2]), reverse=True)
 w = csv.writer(sys.stdout)
