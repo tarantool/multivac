@@ -12,8 +12,19 @@ It collects all troubles of CI.
 Add a token on [Personal access token][gh_token] GitHub page, give
 `repo:public_repo` access and copy the token to `token.txt`.
 
-Run `./multivac/fetch.py` (it's long, but you can stop just by Ctrl+C).
+Collect logs:
 
-Run `./multivac/last_seen.py` (can be invoked during fetching).
+```
+$ ./multivac/fetch.py --branch master
+$ ./multivac/fetch.py --branch 2.8
+$ ./multivac/fetch.py --branch 2.7
+$ ./multivac/fetch.py --branch 1.10
+```
+
+Generate report:
+
+```
+$ ./multivac/last_seen.py --branch master --branch 2.8 --branch 2.7 --branch 1.10
+```
 
 [gh_token]: https://github.com/settings/tokens
