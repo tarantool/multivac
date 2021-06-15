@@ -10,3 +10,6 @@ runs
 # Python bytecode.
 *.pyc
 __pycache__
+
+# Debug logs.
+debug.log

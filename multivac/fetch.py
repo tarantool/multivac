@@ -7,6 +7,7 @@ import argparse
 import requests
 import json
 import zipfile
+import datetime
 
 
 parser = argparse.ArgumentParser(description='Fetch GitHub Actions logs')
@@ -23,6 +24,36 @@ if not os.path.isfile(token_file):
     raise RuntimeError('{file} is not a regular file'.format(file=token_file))
 with open(token_file, 'r') as f:
     token = f.read().strip()
+
+
+session = requests.Session()
+session.headers.update({
+    'Accept': 'application/vnd.github.v3+json',
+    'Authorization': 'token ' + token,
+})
+debug_log_fh = open('debug.log', 'a')
+
+
+def timestamp():
+    return datetime.datetime.now().isoformat()
+
+
+def http_get(url):
+    """HTTP GET with logging to debug.log and raise on a bad HTTP status."""
+    print('{} HTTP GET: {}'.format(timestamp(), url), file=debug_log_fh)
+    r = session.get(url)
+    print('{} Response headers:\n{}'.format(timestamp(),
+          json.dumps(dict(r.headers), indent=2)), file=debug_log_fh)
+    if r.headers['content-type'] == 'application/zip':
+        response_text = '[Don\'t log application/zip response.]'
+    elif r.headers['content-type'].startswith('application/json'):
+        response_text = json.dumps(r.json(), indent=2)
+    else:
+        response_text = r.text
+    print('{} Response:\n{}'.format(timestamp(), response_text),
+          file=debug_log_fh)
+    r.raise_for_status()
+    return r
 
 
 class Run:
@@ -66,14 +97,13 @@ class Run:
     def _log(self, *args):
         print(*args, file=sys.stderr)
 
-    def store(self, session):
+    def store(self):
         self._log('Write {}'.format(self.meta_path))
         with open(self.meta_path, 'w') as f:
             json.dump(self._data, f, indent=2)
 
         self._log('Download {}'.format(self.logs_url))
-        r = session.get(self.logs_url)
-        r.raise_for_status()
+        r = http_get(self.logs_url)
         self._log('Write {}'.format(self.logs_archive_path))
         with open(self.logs_archive_path, 'wb') as f:
             f.write(r.content)
@@ -90,13 +120,6 @@ class Run:
                     f.write(data)
 
 
-session = requests.Session()
-session.headers.update({
-    'Accept': 'application/vnd.github.v3+json',
-    'Authorization': 'token ' + token,
-})
-
-
 def status(pages, pages_all, run_count, run_total, url):
     print('[pages {:2} / {:2}] [runs {:4} / {:4}] Download {}'.format(
           pages, pages_all, run_count, run_total, url), file=sys.stderr)
@@ -105,7 +128,7 @@ def status(pages, pages_all, run_count, run_total, url):
 def runs():
     url = 'https://api.github.com/repos/{}/{}/actions/runs'.format(owner, repo)
     status(0, '??', 0, '??', url)
-    r = session.get(url)
+    r = http_get(url)
 
     run_count = 0
     for data in r.json()['workflow_runs']:
@@ -123,7 +146,7 @@ def runs():
         next_url = r.links['next']['url']
         run_total = r.json()['total_count']
         status(pages, pages_all_str, run_count, run_total, next_url)
-        r = session.get(next_url)
+        r = http_get(next_url)
         for data in r.json()['workflow_runs']:
             run_count += 1
             yield Run(data)
@@ -139,4 +162,6 @@ for run in runs():
         continue
     if run.is_stored:
         break
-    run.store(session)
+    run.store()
+
+debug_log_fh.close()
