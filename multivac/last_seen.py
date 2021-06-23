@@ -2,7 +2,7 @@
 
 import os
 import sys
-import re
+# import re
 import glob
 from datetime import datetime
 import json
