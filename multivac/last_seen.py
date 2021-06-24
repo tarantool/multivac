@@ -2,31 +2,12 @@
 
 import os
 import sys
-# import re
 import glob
 from datetime import datetime
 import json
 import csv
 import argparse
 import importlib.resources as pkg_resources
-
-
-# from subprocess import PIPE
-# from subprocess import Popen
-
-
-# SEP_RE = r'; '
-# EVENT_RE = r'event: (?P<event>[^;]+)'
-# TEST_RE = r'test: (?P<test>[^;]+)'
-# CONF_RE = r'conf: (?P<conf>[^;]+)'
-# STATUS_RE = r'status: (?P<status>[^;]+)'
-# RE = re.compile(
-#     '^' +
-#     EVENT_RE + SEP_RE +
-#     TEST_RE + SEP_RE +
-#     CONF_RE + SEP_RE +
-#     STATUS_RE +
-#     '$')
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,14 +29,6 @@ result_format = args.format
 
 
 def fails(log):
-    # cmd = ['multivac/sensors/test_status.py', log]
-    # with Popen(cmd, stdout=PIPE, encoding='utf-8') as process:
-    #     for line in process.stdout:
-    #         m = RE.match(line.rstrip())
-    #         if m and m['event'] == 'test status' and \
-    #                 m['status'] in ('fail', 'transient fail'):
-    #             conf = None if m['conf'] == 'null' else m['conf']
-    #             yield m['test'], conf, m['status']
     for event in test_status.execute(log):
         if event['event'] != 'test status':
             continue
