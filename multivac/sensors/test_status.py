@@ -29,6 +29,14 @@ def get_cache_filepath(log_filepath):
 
 
 def test_status_iter(log_fh, cache_filepath=None):
+    """ Iterator generator, which accepts a log file handle
+        (which contains an output of a CI job) and yields
+        (test, conf, status) tuples.
+
+        Caches result in the 'cache_filepath' file when its name
+        is provided. Reuses the existing cache on next
+        invocations.
+    """
     if cache_filepath:
         if os.path.isfile(cache_filepath):
             with open(cache_filepath, 'r') as cache_fh:
@@ -54,6 +62,13 @@ def test_status_iter(log_fh, cache_filepath=None):
 
 
 def test_smart_status_iter(log_fh, cache_filepath=None):
+    """ Iterator generator that yields (test, conf, status)
+        tuples.
+
+        The difference from `test_status_iter()` is that this
+        iterator squashes duplicates and reports 'transient fail'
+        status for a test, which fails, run again and succeeds.
+    """
     tmp = OrderedDict()
     for test, conf, status in test_status_iter(log_fh, cache_filepath):
         key = (test, conf)
@@ -66,6 +81,13 @@ def test_smart_status_iter(log_fh, cache_filepath=None):
 
 
 def execute(log_filepath):
+    """ External API for the smart test status iterator.
+
+        The result format is designed to provide some level of
+        unification between different sensors. The event
+        dictionary for the 'test status' event contains `test`,
+        `conf` and `status` fields (except common `event` field).
+    """
     cache_filepath = get_cache_filepath(log_filepath)
     with open(log_filepath, 'r') as log_fh:
         for test, conf, status in test_smart_status_iter(
@@ -79,6 +101,12 @@ def execute(log_filepath):
 
 
 if __name__ == '__main__':
+    """ Command line API for the smart test status iterator.
+
+        Accepts a CI log file name as the command line argument,
+        prints test statuses in a simple format that may be
+        grepped or parsed from arbitrary language.
+    """
     log_filepath = sys.argv[1]
     cache_filepath = get_cache_filepath(log_filepath)
     with open(log_filepath, 'r') as log_fh:
