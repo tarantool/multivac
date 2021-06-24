@@ -22,17 +22,17 @@ TEST_STATUS_LINE_RE = re.compile(
     '$')
 
 
-def test_status_iter(f):
-    for line in f:
+def test_status_iter(log_fh):
+    for line in log_fh:
         m = TEST_STATUS_LINE_RE.match(line)
         if m:
             status = m.group('status') or 'fail'
             yield m['test'], m['conf'], status
 
 
-def test_smart_status_iter(f):
+def test_smart_status_iter(log_fh):
     tmp = OrderedDict()
-    for test, conf, status in test_status_iter(f):
+    for test, conf, status in test_status_iter(log_fh):
         key = (test, conf)
         if status == 'pass' and tmp.get(key) == 'fail':
             status = 'transient fail'
@@ -43,8 +43,8 @@ def test_smart_status_iter(f):
 
 
 def execute(log_filepath):
-    with open(log_filepath, 'r') as f:
-        for test, conf, status in test_smart_status_iter(f):
+    with open(log_filepath, 'r') as log_fh:
+        for test, conf, status in test_smart_status_iter(log_fh):
             yield {
                 'event': 'test status',
                 'test': test,
@@ -54,7 +54,7 @@ def execute(log_filepath):
 
 
 if __name__ == '__main__':
-    with open(sys.argv[1], 'r') as f:
-        for test, conf, status in test_smart_status_iter(f):
+    with open(sys.argv[1], 'r') as log_fh:
+        for test, conf, status in test_smart_status_iter(log_fh):
             print('event: test status; test: {}; conf: {}; status: {}'.format(
                 test, conf or 'null', status))
