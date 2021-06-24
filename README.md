@@ -27,4 +27,7 @@ Generate report:
 $ ./multivac/last_seen.py --branch master --branch 2.8 --branch 2.7 --branch 1.10
 ```
 
+Add `--format html` to get the 'last seen' report in the HTML format instead of
+CSV. Reports are stored in the `output` directory.
+
 [gh_token]: https://github.com/settings/tokens

@@ -1,0 +1,54 @@
+body {
+    background-color: #222;
+    color: #ccc;
+}
+
+table {
+    width: 100%;
+    max-width: 900px;
+    min-width: 400px;
+    text-align: center;
+    margin-top: 2em;
+}
+
+caption {
+    caption-side: top;
+    font-style: italic;
+    font-size: 120%;
+    margin: 4px;
+}
+
+a:link, a:visited, a:active {
+    color: #ccc;
+}
+
+th, td {
+    border: 1px solid gray;
+}
+
+th, td {
+    height: 24px;
+    padding: 4px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+table.last_seen tr td.test {
+    text-align: left;
+}
+
+table.last_seen tr td.count {
+    text-align: right;
+}
+
+th {
+    background-color: #222;
+}
+
+table tr:nth-child(odd) td {
+    background-color: #333;
+}
+
+table tr:nth-child(even) td {
+    background-color: #555;
+}
