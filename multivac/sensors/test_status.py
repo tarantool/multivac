@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import re
+import json
 from collections import OrderedDict
 
 
@@ -22,17 +24,38 @@ TEST_STATUS_LINE_RE = re.compile(
     '$')
 
 
-def test_status_iter(log_fh):
+def get_cache_filepath(log_filepath):
+    return '{}.test_status.cache.json'.format(log_filepath)
+
+
+def test_status_iter(log_fh, cache_filepath=None):
+    if cache_filepath:
+        if os.path.isfile(cache_filepath):
+            with open(cache_filepath, 'r') as cache_fh:
+                data = json.load(cache_fh)
+            for test_status in data:
+                yield tuple(test_status)
+            return
+
+        cache = []
+
     for line in log_fh:
         m = TEST_STATUS_LINE_RE.match(line)
         if m:
             status = m.group('status') or 'fail'
-            yield m['test'], m['conf'], status
+            res = (m['test'], m['conf'], status)
+            if cache_filepath:
+                cache.append(res)
+            yield res
+
+    if cache_filepath:
+        with open(cache_filepath, 'w') as cache_fh:
+            json.dump(cache, cache_fh, indent=2)
 
 
-def test_smart_status_iter(log_fh):
+def test_smart_status_iter(log_fh, cache_filepath=None):
     tmp = OrderedDict()
-    for test, conf, status in test_status_iter(log_fh):
+    for test, conf, status in test_status_iter(log_fh, cache_filepath):
         key = (test, conf)
         if status == 'pass' and tmp.get(key) == 'fail':
             status = 'transient fail'
@@ -43,8 +66,10 @@ def test_smart_status_iter(log_fh):
 
 
 def execute(log_filepath):
+    cache_filepath = get_cache_filepath(log_filepath)
     with open(log_filepath, 'r') as log_fh:
-        for test, conf, status in test_smart_status_iter(log_fh):
+        for test, conf, status in test_smart_status_iter(
+                log_fh, cache_filepath):
             yield {
                 'event': 'test status',
                 'test': test,
@@ -54,7 +79,10 @@ def execute(log_filepath):
 
 
 if __name__ == '__main__':
-    with open(sys.argv[1], 'r') as log_fh:
-        for test, conf, status in test_smart_status_iter(log_fh):
+    log_filepath = sys.argv[1]
+    cache_filepath = get_cache_filepath(log_filepath)
+    with open(log_filepath, 'r') as log_fh:
+        for test, conf, status in test_smart_status_iter(
+                log_fh, cache_filepath):
             print('event: test status; test: {}; conf: {}; status: {}'.format(
                 test, conf or 'null', status))
