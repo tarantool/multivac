@@ -28,6 +28,10 @@ branch_list = args.branch
 result_format = args.format
 
 
+output_dir = 'output'
+workflow_runs_dir = 'runs'
+
+
 def fails(log):
     for event in test_status.execute(log):
         if event['event'] != 'test status':
@@ -40,7 +44,7 @@ def fails(log):
 timestamps_min = dict()
 timestamps_max = dict()
 res = dict()
-for log in glob.glob('runs/*.log'):
+for log in glob.glob(os.path.join(workflow_runs_dir, '*.log')):
     meta_path = log.split('.', 1)[0] + '.json'
     with open(meta_path, 'r') as f:
         run = json.load(f)
@@ -164,11 +168,11 @@ def write_html():
     write_html_footer()
 
 
-if not os.path.isdir('output'):
-    os.makedirs('output')
+if not os.path.isdir(output_dir):
+    os.makedirs(output_dir)
 
 if result_format == 'csv':
-    output_file = 'output/last_seen.csv'
+    output_file = os.path.join(output_dir, 'last_seen.csv')
 
     with open(output_file, 'w') as f:
         output_fh = f
@@ -176,8 +180,8 @@ if result_format == 'csv':
 
     print('Written {}'.format(output_file), file=sys.stderr)
 elif result_format == 'html':
-    output_css_file = 'output/main.css'
-    output_html_file = 'output/last_seen.html'
+    output_css_file = os.path.join(output_dir, 'main.css')
+    output_html_file = os.path.join(output_dir, 'last_seen.html')
 
     css = pkg_resources.read_text('multivac.resources', 'main.css')
     with open(output_css_file, 'w') as f:
