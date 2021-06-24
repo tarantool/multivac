@@ -3,6 +3,15 @@ name: testing
 on: [push, pull_request]
 
 jobs:
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2
+      - run: pip install --upgrade flake8
+
+      - uses: actions/checkout@v2
+      - run: flake8
+
   testing:
     runs-on: ubuntu-latest
     steps:
