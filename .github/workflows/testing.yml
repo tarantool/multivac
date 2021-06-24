@@ -1,0 +1,13 @@
+name: testing
+
+on: [push, pull_request]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v2
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pip install -r requirements-test.txt
+      - run: make test
