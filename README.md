@@ -15,10 +15,10 @@ Add a token on [Personal access token][gh_token] GitHub page, give
 Collect logs:
 
 ```
-$ ./multivac/fetch.py --branch master
-$ ./multivac/fetch.py --branch 2.8
-$ ./multivac/fetch.py --branch 2.7
-$ ./multivac/fetch.py --branch 1.10
+$ ./multivac/fetch.py --branch master tarantool/tarantool
+$ ./multivac/fetch.py --branch 2.8 tarantool/tarantool
+$ ./multivac/fetch.py --branch 2.7 tarantool/tarantool
+$ ./multivac/fetch.py --branch 1.10 tarantool/tarantool
 ```
 
 Generate report:
