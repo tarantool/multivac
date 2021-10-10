@@ -86,6 +86,8 @@ def write_csv():
 
     print('Statistics for the following log intervals\n', file=sys.stderr)
     for branch in branch_list:
+        if branch not in timestamps_min or branch not in timestamps_max:
+            continue
         timestamp_min = timestamps_min[branch].isoformat()
         timestamp_max = timestamps_max[branch].isoformat()
         print('{}: [{}, {}]'.format(branch, timestamp_min, timestamp_max),
@@ -129,6 +131,8 @@ def write_html():
     write_line('      </tr>')
     write_line('      <tr>')
     for branch in branch_list:
+        if branch not in timestamps_min or branch not in timestamps_max:
+            continue
         timestamp_min = timestamps_min[branch].isoformat()
         timestamp_max = timestamps_max[branch].isoformat()
         write_line('        <td class="branch">{}</td>'.format(branch))
