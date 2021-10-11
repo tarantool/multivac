@@ -29,7 +29,8 @@ result_format = args.format
 
 
 output_dir = 'output'
-workflow_runs_dir = 'runs'
+workflow_runs_dir = 'workflow_runs'
+workflow_run_jobs_dir = 'workflow_run_jobs'
 
 
 def fails(log):
@@ -44,22 +45,31 @@ def fails(log):
 timestamps_min = dict()
 timestamps_max = dict()
 res = dict()
-for log in glob.glob(os.path.join(workflow_runs_dir, '*.log')):
-    meta_path = log.split('.', 1)[0] + '.json'
-    with open(meta_path, 'r') as f:
-        run = json.load(f)
-    branch = run['head_branch']
+for log in glob.glob(os.path.join(workflow_run_jobs_dir, '*.log')):
+    # Load job meta.
+    job_meta_path = log.split('.', 1)[0] + '.json'
+    with open(job_meta_path, 'r') as f:
+        job = json.load(f)
 
+    # Load workflow run meta.
+    run_id = str(job['run_id'])
+    run_meta_path = os.path.join(workflow_runs_dir, run_id + '.json')
+    with open(run_meta_path, 'r') as f:
+        run = json.load(f)
+
+    # Skip branches, which were not requested.
+    branch = run['head_branch']
     if branch not in branch_list:
         continue
 
-    timestamp = datetime.fromisoformat(run['created_at'].rstrip('Z'))
+    timestamp_str = job['started_at'].rstrip('Z') + '+00:00'
+    timestamp = datetime.fromisoformat(timestamp_str)
     if branch not in timestamps_min or timestamps_min[branch] > timestamp:
         timestamps_min[branch] = timestamp
     if branch not in timestamps_max or timestamps_max[branch] < timestamp:
         timestamps_max[branch] = timestamp
 
-    url = run['html_url']
+    url = job['html_url']
 
     for test, conf, status in fails(log):
         key = (test, conf, status)

@@ -4,8 +4,9 @@
 # Secret token for GitHub
 token.txt
 
-# Fetched logs.
-runs
+# Fetched metainfo, logs, cached data views.
+workflow_runs
+workflow_run_jobs
 
 # Python bytecode.
 *.pyc
