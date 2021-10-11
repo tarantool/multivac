@@ -1,0 +1,2 @@
+- [unit/rtree_iterator.test, null, pass]
+- [replication/gh-6018-election-boot-voter.test.lua, null, hang]

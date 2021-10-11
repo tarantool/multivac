@@ -13,6 +13,7 @@ WORKER_ID_RE = r'\[\d+\]'
 TEST_RE = r'(?P<test>[^ ]+/[^ ]+(.test.lua|.test.sql|.test.py|.test|>))'
 CONF_RE = r'((?P<conf>[^ []+)|)'
 STATUS_RE = r'((Test timeout of \d+ secs reached\t)?\[ (?P<status>[^ ]+) \]|)'
+RESULT_RE = r'(?P<result>[^ ]+/[^ ]+\.result)'
 
 TEST_STATUS_LINE_RE = re.compile(
     '^' +
@@ -22,6 +23,15 @@ TEST_STATUS_LINE_RE = re.compile(
     CONF_RE + SEP_RE +
     STATUS_RE +
     '$')
+TEST_HANG_RE = re.compile(
+    '^' +
+    TIMESTAMP_RE + SEP_RE +
+    r'Test hung! Result content mismatch:' +
+    '$')
+HANG_RESULT_RE = re.compile(
+    '^' +
+    TIMESTAMP_RE + SEP_RE +
+    r'--- ' + RESULT_RE + r'\b')
 
 
 def get_cache_filepath(log_filepath):
@@ -47,6 +57,7 @@ def test_status_iter(log_fh, cache_filepath=None):
 
         cache = []
 
+    hang_detected = False
     for line in log_fh:
         m = TEST_STATUS_LINE_RE.match(line)
         if m:
@@ -55,6 +66,30 @@ def test_status_iter(log_fh, cache_filepath=None):
             if cache_filepath:
                 cache.append(res)
             yield res
+            continue
+
+        m = TEST_HANG_RE.match(line)
+        if m:
+            hang_detected = True
+            continue
+
+        if hang_detected:
+            hang_detected = False
+            m = HANG_RESULT_RE.match(line)
+            if m:
+                result = m['result']
+                # Assume .result -> .test.lua as most common test
+                # kind.
+                #
+                # In fact, we don't know, whether it is .test.lua,
+                # .test.sql, .test.py, .test.sql or just .test.
+                test = result.split('.', 1)[0] + '.test.lua'
+                # We don't know a configuration, assume None.
+                res = (test, None, 'hang')
+                if cache_filepath:
+                    cache.append(res)
+                yield res
+                continue
 
     if cache_filepath:
         with open(cache_filepath, 'w') as cache_fh:

@@ -37,7 +37,7 @@ def fails(log):
         if event['event'] != 'test status':
             continue
         status = event['status']
-        if status in ('fail', 'transient fail'):
+        if status in ('fail', 'transient fail', 'hang'):
             yield event['test'], event['conf'], status
 
 

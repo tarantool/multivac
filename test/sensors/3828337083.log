@@ -1,0 +1,218 @@
+2021-10-07T15:14:57.0076354Z [026] unit/rtree_iterator.test                                        [ pass ]
+2021-10-07T15:15:07.0945746Z No output during 10 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:15:07.0953736Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:15:17.2816085Z No output during 20 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:15:17.2822426Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:15:27.4685423Z No output during 30 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:15:27.4688302Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:15:37.6530368Z No output during 40 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:15:37.6572729Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:15:47.8403754Z No output during 51 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:15:47.8409480Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:15:58.0248463Z No output during 61 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:15:58.0254488Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:16:08.2099564Z No output during 71 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:16:08.2104225Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:16:18.3935689Z No output during 81 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:16:18.3944740Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:16:28.5777610Z No output during 91 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:16:28.5781589Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:16:38.7620278Z No output during 101 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:16:38.7625082Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:16:48.9475490Z No output during 111 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:16:48.9481375Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:16:59.1311198Z No output during 121 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:16:59.1314816Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:17:09.3199627Z No output during 131 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:17:09.3203779Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:17:19.5051169Z No output during 141 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:17:19.5055958Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:17:29.6891365Z No output during 151 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:17:29.6898499Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:17:39.8749660Z No output during 162 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:17:39.8753102Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:17:50.0536389Z No output during 172 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:17:50.0541750Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:18:00.2413986Z No output during 182 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:18:00.2417635Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:18:10.4292860Z No output during 192 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:18:10.4296629Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:18:20.6126607Z No output during 202 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:18:20.6129835Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:18:30.7941266Z No output during 212 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:18:30.8012649Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:18:40.9875719Z No output during 222 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:18:40.9884028Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:18:51.1711258Z No output during 232 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:18:51.1724190Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:19:01.3610634Z No output during 242 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:19:01.3618571Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:19:11.5451783Z No output during 252 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:19:11.5456517Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:19:21.7291338Z No output during 263 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:19:21.7298100Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:19:31.9136552Z No output during 273 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:19:31.9150189Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:19:42.0999181Z No output during 283 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:19:42.1008232Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:19:52.2828329Z No output during 293 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:19:52.2836853Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:20:02.4720475Z No output during 303 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:20:02.4727575Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:20:12.6550082Z No output during 313 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:20:12.6561505Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:20:22.8373925Z No output during 323 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+2021-10-07T15:20:22.8383147Z - 022_replication [replication/gh-6018-election-boot-voter.test.lua, None] at /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result:0
+2021-10-07T15:20:22.8390465Z Test hung! Result content mismatch:
+2021-10-07T15:20:22.8405325Z --- replication/gh-6018-election-boot-voter.result	Thu Oct  7 13:53:41 2021
+2021-10-07T15:20:22.8411904Z +++ /build/usr/src/debug/tarantool-2.10.0~beta1.78.dev/test/var/022_replication/gh-6018-election-boot-voter.result	Thu Oct  7 15:14:54 2021
+2021-10-07T15:20:22.8417931Z @@ -1,116 +0,0 @@
+2021-10-07T15:20:22.8419240Z --- test-run result file version 2
+2021-10-07T15:20:22.8420377Z ---
+2021-10-07T15:20:22.8421506Z --- gh-6018: in an auto-election cluster nodes with voter state could be selected
+2021-10-07T15:20:22.8422868Z --- as bootstrap leaders. They should not, because a voter can't be ever writable
+2021-10-07T15:20:22.8424375Z --- and it can neither boot itself nor register other nodes.
+2021-10-07T15:20:22.8432742Z ---
+2021-10-07T15:20:22.8460768Z --- Similar situation was with the manual election. All instances might have
+2021-10-07T15:20:22.8462435Z --- manual election mode. Such a cluster wouldn't be able to boot if their
+2021-10-07T15:20:22.8466141Z --- bootstrap master wouldn't become an elected leader automatically at least
+2021-10-07T15:20:22.8468032Z --- once.
+2021-10-07T15:20:22.8469183Z ---
+2021-10-07T15:20:22.8470662Z -test_run = require('test_run').new()
+2021-10-07T15:20:22.8472000Z - | ---
+2021-10-07T15:20:22.8473083Z - | ...
+2021-10-07T15:20:22.8474132Z -
+2021-10-07T15:20:22.8475590Z -function boot_with_master_election_mode(mode)                                   \
+2021-10-07T15:20:22.8477345Z -        test_run:cmd('create server master with '..                             \
+2021-10-07T15:20:22.8479274Z -                     'script="replication/gh-6018-master.lua"')                 \
+2021-10-07T15:20:22.8481929Z -        test_run:cmd('start server master with wait=False, args="'..mode..'"')  \
+2021-10-07T15:20:22.8483767Z -        test_run:cmd('create server replica with '..                            \
+2021-10-07T15:20:22.8485573Z -                     'script="replication/gh-6018-replica.lua"')                \
+2021-10-07T15:20:22.8488360Z -        test_run:cmd('start server replica')                                    \
+2021-10-07T15:20:22.8489770Z -end
+2021-10-07T15:20:22.8490854Z - | ---
+2021-10-07T15:20:22.8491894Z - | ...
+2021-10-07T15:20:22.8493046Z -
+2021-10-07T15:20:22.8494115Z -function stop_cluster()                                                         \
+2021-10-07T15:20:22.8495206Z -    test_run:cmd('stop server replica')                                         \
+2021-10-07T15:20:22.8496452Z -    test_run:cmd('stop server master')                                          \
+2021-10-07T15:20:22.8498267Z -    test_run:cmd('delete server replica')                                       \
+2021-10-07T15:20:22.8499344Z -    test_run:cmd('delete server master')                                        \
+2021-10-07T15:20:22.8500540Z -end
+2021-10-07T15:20:22.8501177Z - | ---
+2021-10-07T15:20:22.8501954Z - | ...
+2021-10-07T15:20:22.8502629Z -
+2021-10-07T15:20:22.8503666Z ---
+2021-10-07T15:20:22.8504768Z --- Candidate leader.
+2021-10-07T15:20:22.8505784Z ---
+2021-10-07T15:20:22.8507585Z -boot_with_master_election_mode('candidate')
+2021-10-07T15:20:22.8508462Z - | ---
+2021-10-07T15:20:22.8509340Z - | ...
+2021-10-07T15:20:22.8510492Z -
+2021-10-07T15:20:22.8511301Z -test_run:switch('master')
+2021-10-07T15:20:22.8512191Z - | ---
+2021-10-07T15:20:22.8512923Z - | - true
+2021-10-07T15:20:22.8513556Z - | ...
+2021-10-07T15:20:22.8514900Z -test_run:wait_cond(function() return not box.info.ro end)
+2021-10-07T15:20:22.8516140Z - | ---
+2021-10-07T15:20:22.8516882Z - | - true
+2021-10-07T15:20:22.8517571Z - | ...
+2021-10-07T15:20:22.8544222Z -assert(box.info.election.state == 'leader')
+2021-10-07T15:20:22.8545883Z - | ---
+2021-10-07T15:20:22.8547247Z - | - true
+2021-10-07T15:20:22.8547992Z - | ...
+2021-10-07T15:20:22.8548655Z -
+2021-10-07T15:20:22.8549602Z -test_run:switch('replica')
+2021-10-07T15:20:22.8550401Z - | ---
+2021-10-07T15:20:22.8551233Z - | - true
+2021-10-07T15:20:22.8551940Z - | ...
+2021-10-07T15:20:22.8552736Z -assert(box.info.ro)
+2021-10-07T15:20:22.8553504Z - | ---
+2021-10-07T15:20:22.8554288Z - | - true
+2021-10-07T15:20:22.8555616Z - | ...
+2021-10-07T15:20:22.8556552Z -assert(box.info.election.state == 'follower')
+2021-10-07T15:20:22.8557811Z - | ---
+2021-10-07T15:20:22.8558548Z - | - true
+2021-10-07T15:20:22.8559289Z - | ...
+2021-10-07T15:20:22.8560098Z -
+2021-10-07T15:20:22.8560842Z -test_run:switch('default')
+2021-10-07T15:20:22.8561624Z - | ---
+2021-10-07T15:20:22.8562371Z - | - true
+2021-10-07T15:20:22.8563121Z - | ...
+2021-10-07T15:20:22.8563870Z -stop_cluster()
+2021-10-07T15:20:22.8564530Z - | ---
+2021-10-07T15:20:22.8565195Z - | ...
+2021-10-07T15:20:22.8569319Z -
+2021-10-07T15:20:22.8570265Z ---
+2021-10-07T15:20:22.8571066Z --- Manual leader.
+2021-10-07T15:20:22.8571783Z ---
+2021-10-07T15:20:22.8572668Z -boot_with_master_election_mode('manual')
+2021-10-07T15:20:22.8573582Z - | ---
+2021-10-07T15:20:22.8574274Z - | ...
+2021-10-07T15:20:22.8574967Z -
+2021-10-07T15:20:22.8575684Z -test_run:switch('master')
+2021-10-07T15:20:22.8576888Z - | ---
+2021-10-07T15:20:22.8577707Z - | - true
+2021-10-07T15:20:22.8578404Z - | ...
+2021-10-07T15:20:22.8579863Z -test_run:wait_cond(function() return not box.info.ro end)
+2021-10-07T15:20:22.8580733Z - | ---
+2021-10-07T15:20:22.8581491Z - | - true
+2021-10-07T15:20:22.8582292Z - | ...
+2021-10-07T15:20:22.8583429Z -assert(box.info.election.state == 'leader')
+2021-10-07T15:20:22.8584408Z - | ---
+2021-10-07T15:20:22.8585057Z - | - true
+2021-10-07T15:20:22.8585906Z - | ...
+2021-10-07T15:20:22.8586509Z -
+2021-10-07T15:20:22.8588721Z -test_run:switch('replica')
+2021-10-07T15:20:22.8591484Z - | ---
+2021-10-07T15:20:22.8592234Z - | - true
+2021-10-07T15:20:22.8593129Z - | ...
+2021-10-07T15:20:22.8593878Z -assert(box.info.ro)
+2021-10-07T15:20:22.8594672Z - | ---
+2021-10-07T15:20:22.8595370Z - | - true
+2021-10-07T15:20:22.8596080Z - | ...
+2021-10-07T15:20:22.8597067Z -assert(box.info.election.state == 'follower')
+2021-10-07T15:20:22.8597924Z - | ---
+2021-10-07T15:20:22.8598822Z - | - true
+2021-10-07T15:20:22.8599646Z - | ...
+2021-10-07T15:20:22.8600436Z -
+2021-10-07T15:20:22.8601735Z -test_run:switch('default')
+2021-10-07T15:20:22.8602975Z - | ---
+2021-10-07T15:20:22.8603650Z - | - true
+2021-10-07T15:20:22.8604294Z - | ...
+2021-10-07T15:20:22.8605086Z -stop_cluster()
+2021-10-07T15:20:22.8605843Z - | ---
+2021-10-07T15:20:22.8606502Z - | ...
+2021-10-07T15:20:22.8606832Z 
+2021-10-07T15:20:22.8607699Z [Main process] No output from workers. It seems that we hang. Send SIGKILL to workers; exiting...
+2021-10-07T15:20:22.8609147Z ---------------------------------------------------------------------------------
+2021-10-07T15:20:22.8610592Z Top 10 tests by occupied memory (RSS, Mb):
+2021-10-07T15:20:22.8611896Z *  522.8 box/gh-3633-tuple-size-increasing.test.lua                   
+2021-10-07T15:20:22.8613302Z *  286.1 vinyl/gh-4957-too-many-upserts.test.lua                      
+2021-10-07T15:20:22.8614305Z *  266.8 vinyl/gh.test.lua                                            
+2021-10-07T15:20:22.8615414Z *  266.7 sql-tap/delete3.test.lua:memtx                               
+2021-10-07T15:20:22.8616768Z *  156.4 box/gh-3633-simple-tuple-size-increasing.test.lua            
+2021-10-07T15:20:22.8617919Z *  154.2 wal_off/oom.test.lua                                         
+2021-10-07T15:20:22.8619116Z *  153.1 replication/gh-5446-qsync-eval-quorum.test.lua:vinyl         
+2021-10-07T15:20:22.8620645Z *  146.7 replication/gh-5446-qsync-eval-quorum.test.lua:memtx         
+2021-10-07T15:20:22.8622762Z *  120.3 unit/vy_mem.test                                             
+2021-10-07T15:20:22.8624304Z *  119.4 sql-tap/sort.test.lua:memtx                                  
+2021-10-07T15:20:22.8624789Z 
+2021-10-07T15:20:22.8625497Z (Tests quicker than 0.1 seconds may be missed.)
+2021-10-07T15:20:22.8626645Z ---------------------------------------------------------------------------------
+2021-10-07T15:20:22.8627447Z Top 10 longest tests (seconds):
+2021-10-07T15:20:22.8628635Z *  27.47 box/gh-5422-broken_snapshot.test.lua                         
+2021-10-07T15:20:22.8630164Z *   9.74 sql-tap/sort.test.lua:memtx                                  
+2021-10-07T15:20:22.8632070Z *   8.87 box/gh-3633-tuple-size-increasing.test.lua                   
+2021-10-07T15:20:22.8633298Z *   8.11 sql-tap/select9.test.lua:vinyl                               
+2021-10-07T15:20:22.8634965Z *   6.77 replication/gh-3642-misc-no-socket-leak-on-replica-disconnect.test.lua 
+2021-10-07T15:20:22.8636692Z *   6.32 box/gh-6293-implement-new-net-stat.test.lua                  
+2021-10-07T15:20:22.8637780Z *   6.21 box/net.box_iproto_transactions_over_streams.test.lua        
+2021-10-07T15:20:22.8639054Z *   6.01 replication/gh-5806-xlog-cleanup.test.lua:vinyl              
+2021-10-07T15:20:22.8640779Z *   5.93 sql-tap/select9.test.lua:memtx                               
+2021-10-07T15:20:22.8641927Z *   5.81 replication/gh-5806-xlog-cleanup.test.lua:memtx              
+2021-10-07T15:20:22.8643160Z ---------------------------------------------------------------------------------
+2021-10-07T15:20:22.8644413Z Statistics:
+2021-10-07T15:20:22.8645523Z * disabled: 124
+2021-10-07T15:20:22.8647434Z * pass: 1059
+2021-10-07T15:20:22.8648155Z * undone: 221

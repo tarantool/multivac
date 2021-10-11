@@ -56,6 +56,19 @@ class TestStatus(unittest.TestCase):
     def test_smart_status_another_line(self):
         self.check_test_smart_status_iter('900598368.log')
 
+    # 3828337083.log has a hung test (when test-run kills its
+    # workers). It looks so:
+    #
+    #  | Test hung! Result content mismatch:
+    #  | --- replication/gh-6018-election-boot-voter.result <...>
+    #  | +++ /build/<...>/gh-6018-election-boot-voter.result <...>
+
+    def test_status_hang(self):
+        self.check_test_status_iter('3828337083.log')
+
+    def test_smart_status_hang(self):
+        self.check_test_smart_status_iter('3828337083.log')
+
 
 if __name__ == '__main__':
     unittest.main()
