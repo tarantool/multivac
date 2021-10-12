@@ -14,6 +14,8 @@ parser.add_argument('--branch', type=str,
                     help='branch (all if omitted)')
 parser.add_argument('--nologs', action='store_true',
                     help="Don't download logs")
+parser.add_argument('--nostop', action='store_true',
+                    help="Continue till end or rate limit")
 parser.add_argument('repo_path', type=str,
                     help='owner/repository')
 args = parser.parse_args()
@@ -348,7 +350,7 @@ for run in download_workflow_runs(args.branch):
     # [1]: https://github.community/t/135654
     is_ignored = run.id in ignore_in_stop_condition
     run_is_old = startup_time - run.created_at > datetime.timedelta(weeks=2)
-    if run.is_stored and run_is_old and not is_ignored:
+    if not args.nostop and run.is_stored and run_is_old and not is_ignored:
         info('Found stored workflow run {} older than 2 weeks, stopping...',
              run.id)
         break
