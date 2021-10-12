@@ -30,4 +30,9 @@ $ ./multivac/last_seen.py --branch master --branch 2.8 --branch 2.7 --branch 1.1
 Add `--format html` to get the 'last seen' report in the HTML format instead of
 CSV. Reports are stored in the `output` directory.
 
+**Caution:** Don't mix usual `fetch.py` calls with `--nologs` calls (see
+below), otherwise some logs may be missed. The script is designed to either
+collect meta + logs or just meta. If the meta is up-to-date, there is no cheap
+way to ensure that all relevant jobs are collected with logs.
+
 [gh_token]: https://github.com/settings/tokens

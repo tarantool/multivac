@@ -10,8 +10,12 @@ import datetime
 
 
 parser = argparse.ArgumentParser(description='Download GitHub Actions logs')
-parser.add_argument('--branch', type=str, help='branch (all if omitted)')
-parser.add_argument('repo_path', type=str, help='owner/repository')
+parser.add_argument('--branch', type=str,
+                    help='branch (all if omitted)')
+parser.add_argument('--nologs', action='store_true',
+                    help="Don't download logs")
+parser.add_argument('repo_path', type=str,
+                    help='owner/repository')
 args = parser.parse_args()
 if '/' not in args.repo_path:
     raise ValueError('repo_path must be in the form owner/repository')
@@ -132,6 +136,11 @@ class WorkflowRun:
 
     @property
     def is_stored(self):
+        """ Whether the workflow run metainfo is stored.
+
+            It does not check whether all jobs and logs are stored
+            as well.
+        """
         return os.path.isfile(self.meta_path)
 
     def store(self):
@@ -148,6 +157,7 @@ class WorkflowRun:
 class WorkflowRunJob:
     def __init__(self, data):
         self._data = data
+        self.log = None
 
     @property
     def id(self):
@@ -189,7 +199,11 @@ class WorkflowRunJob:
 
     @property
     def is_stored(self):
-        return os.path.isfile(self.meta_path) and os.path.isfile(self.log_path)
+        if not os.path.isfile(self.meta_path):
+            return False
+        if not args.nologs and not os.path.isfile(self.log_path):
+            return False
+        return True
 
     def download_log(self):
         url = self.log_url
@@ -202,9 +216,10 @@ class WorkflowRunJob:
         with open(self.meta_path, 'w') as f:
             json.dump(self._data, f, indent=2)
 
-        info('Write {}', self.log_path)
-        with open(self.log_path, 'wb') as f:
-            f.write(self.log)
+        if self.log:
+            info('Write {}', self.log_path)
+            with open(self.log_path, 'wb') as f:
+                f.write(self.log)
 
 
 def workflow_runs_download_info(pages, pages_all, obj_count, obj_total, url,
@@ -367,7 +382,8 @@ for run in download_workflow_runs(args.branch):
     # Download logs, store job meta and logs.
     for job in jobs:
         if not job.is_stored:
-            job.download_log()
+            if not args.nologs:
+                job.download_log()
             job.store()
 
     # Store workflow run meta (or update it).
