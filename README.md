@@ -21,6 +21,10 @@ $ ./multivac/fetch.py --branch 2.7 tarantool/tarantool
 $ ./multivac/fetch.py --branch 1.10 tarantool/tarantool
 ```
 
+If something went wrong during initial script run, you may re-run it with
+`--nostop` option: it disables stop heuristic. The heuristics is the following:
+stop on a two weeks old workflow run stored on a previous script call.
+
 Generate report:
 
 ```
