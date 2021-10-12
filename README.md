@@ -39,4 +39,36 @@ below), otherwise some logs may be missed. The script is designed to either
 collect meta + logs or just meta. If the meta is up-to-date, there is no cheap
 way to ensure that all relevant jobs are collected with logs.
 
+## Time spent in jobs
+
+Collect jobs metainformation:
+
+```
+$ ./multivac/fetch.py --nologs --nostop tarantool/tarantool
+```
+
+You may need to re-run it several times to collect enough information: GitHub
+ratelimits requests to 5000 per hour.
+
+If hit by 403 error, look at the last `X-RateLimit-Reset` value in `debug.log`:
+it is time, when you may start the script again. Call `date --date=@<..unix
+time..> '+%a %b %_d %H:%M:%S %Z %Y'` to translate this value into a human
+readable format.
+
+You may continue from a particular page using the `--since N` option (beware of
+holes, always leave some overlap).
+
+Next, generate the report itself:
+
+```
+$ ./multivac/minutes.py [--short]
+```
+
+It prints minutes splitted in two ways:
+
+* per day / per week / per month
+* by 'runs-on' ('ubuntu-20.04' and so on)
+
+Use `--short` to merge 'ubuntu-18.04' and 'ubuntu-20.04' into just 'ubuntu'.
+
 [gh_token]: https://github.com/settings/tokens
