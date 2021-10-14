@@ -16,6 +16,8 @@ parser.add_argument('--nologs', action='store_true',
                     help="Don't download logs")
 parser.add_argument('--nostop', action='store_true',
                     help="Continue till end or rate limit")
+parser.add_argument('--since', type=int, default=1,
+                    help="A workflow run list page to start from it")
 parser.add_argument('repo_path', type=str,
                     help='owner/repository')
 args = parser.parse_args()
@@ -252,7 +254,7 @@ def workflow_runs_page_info(response):
     info('Workflow run IDs on this page: {}', ids)
 
 
-def download_workflow_runs(branch=None):
+def download_workflow_runs(branch=None, since=1):
     """ Download and yield workflow runs metainformation from
         fresh ones toward older ones.
     """
@@ -261,8 +263,8 @@ def download_workflow_runs(branch=None):
         'per_page': 100,
         'branch': branch,
     }
-    url = 'https://api.github.com/repos/{}/{}/actions/runs'.format(
-        args.owner, args.repo)
+    url = 'https://api.github.com/repos/{}/{}/actions/runs?page={}'.format(
+        args.owner, args.repo, since)
     workflow_runs_download_info(0, '??', 0, '??', url, params)
     r = http_get(url, params=params)
     workflow_runs_page_info(r)
@@ -278,7 +280,7 @@ def download_workflow_runs(branch=None):
     if pages_all_match:
         pages_all = int(pages_all_match.group(1))
 
-    pages = 1
+    pages = since
     while 'next' in r.links:
         next_url = r.links['next']['url']
         run_total = r.json()['total_count']
@@ -332,7 +334,7 @@ if not os.path.isdir(workflow_run_jobs_dir):
 
 ignore_in_stop_condition = set()
 
-for run in download_workflow_runs(args.branch):
+for run in download_workflow_runs(args.branch, args.since):
     # Stop condition.
     #
     # If there are no stored runs, continue till the end (how much
