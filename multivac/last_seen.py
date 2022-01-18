@@ -23,6 +23,8 @@ parser.add_argument('--branch', type=str, action='append',
                     help='branch (may be passed several times)')
 parser.add_argument('--format', choices=['csv', 'html'], default='csv',
                     help='result format')
+parser.add_argument('--short', action='store_true',
+                    help="Coalesce 'runs-on' labels by a first word")
 args = parser.parse_args()
 branch_list = args.branch
 result_format = args.format
@@ -71,8 +73,16 @@ for log in glob.glob(os.path.join(workflow_run_jobs_dir, '*.log')):
 
     url = job['html_url']
 
+    # The idea of the --short option is that a user may not be
+    # interested in separate results for, say, ubuntu-18.04 and
+    # ubuntu-20.04. So we can just cut off everything after '-'.
+    labels = job['labels']
+    if args.short:
+        labels = [label.split('-', 1)[0] for label in labels]
+    runs_on = ','.join(labels)
+
     for test, conf, status in fails(log):
-        key = (test, conf, status)
+        key = (test, conf, status, runs_on)
         if key not in res:
             res[key] = (timestamp, branch, 1, url)
         elif res[key][0] < timestamp:
@@ -80,7 +90,8 @@ for log in glob.glob(os.path.join(workflow_run_jobs_dir, '*.log')):
         else:
             res[key] = (res[key][0], res[key][1], res[key][2] + 1, res[key][3])
 
-res = sorted(res.items(), key=lambda kv: (kv[1][0], kv[1][2]), reverse=True)
+res = sorted(res.items(), key=lambda kv: (kv[1][0], kv[1][2], kv[1][3]),
+             reverse=True)
 
 
 output_fh = None
@@ -104,11 +115,12 @@ def write_csv():
               file=sys.stderr)
 
     w = csv.writer(output_fh)
-    write_line('timestamp,test,conf,branch,status,count,url')
+    write_line('timestamp,test,conf,branch,status,count,url,runs_on')
     for key, value in res:
-        test, conf, status = key
+        test, conf, status, runs_on = key
         timestamp, branch, count, url = value
-        w.writerow([timestamp, test, conf, branch, status, count, url])
+        w.writerow([timestamp, test, conf, branch, status, count, url,
+                    runs_on])
 
 
 def write_html_header():
@@ -163,9 +175,10 @@ def write_html():
     write_line('        <th>Status</th>')
     write_line('        <th>Count</th>')
     write_line('        <th>URL</th>')
+    write_line('        <th>Runs on</th>')
     write_line('      </tr>')
     for key, value in res:
-        test, conf, status = key
+        test, conf, status, runs_on = key
         timestamp, branch, count, url = value
         write_line('      <tr>')
         write_line('        <td class="timestamp">{}</td>'.format(timestamp))
@@ -176,6 +189,7 @@ def write_html():
         write_line('        <td class="count">{}</td>'.format(count))
         write_line('        <td class="url"><a href="{}">[log]</td>'.format(
             url))
+        write_line('        <td class="runs_on">{}</td>'.format(runs_on))
         write_line('      </tr>')
     write_line('    </table>')
 
