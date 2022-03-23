@@ -1,0 +1,62 @@
+name: Issue automation
+
+on:
+  issues:
+    types:
+      - opened
+      - reopened
+      - labeled
+
+env:
+  backlog: 'Backlog'
+  in_progress: 'In progress'
+  done: 'Done'
+  epic: '[{\"name\": \"Epic\",\"type\": \"single_select\",\"value\": \"Team Q / Flaky tests\"}]'
+
+
+jobs:
+  issue_opened:
+    name: 'Issue opened with teamQ label'
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' && contains(github.event.issue.labels.*.name, 'teamQ')
+    steps:
+      - name: 'Add new issues to the Development board'
+        uses: leonsteinhaeuser/project-beta-automations@v1.2.1
+        with:
+          gh_token: ${{ secrets.ISSUE_TRIAGE_TOKEN }}
+          organization: tarantool
+          project_id: 53
+          resource_node_id: ${{ github.event.issue.node_id }}
+          status_value: ${{ env.backlog }}
+          operation_mode: custom_field
+          custom_field_values: ${{ env.epic }}
+
+  issue_labeled:
+    name: 'Issue labeled with teamQ'
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'teamQ'
+    steps:
+      - name: 'Add triaged issue to the Development board'
+        uses: leonsteinhaeuser/project-beta-automations@v1.2.1
+        with:
+          gh_token: ${{ secrets.ISSUE_TRIAGE_TOKEN }}
+          organization: tarantool
+          project_id: 53
+          resource_node_id: ${{ github.event.issue.node_id }}
+          status_value: ${{ env.backlog }}
+          operation_mode: custom_field
+          custom_field_values: ${{ env.epic }}
+
+  issue_reopened:
+    name: 'Issue reopened with teamQ label'
+    runs-on: ubuntu-latest
+    if: github.event.action == 'reopened' && contains(github.event.issue.labels.*.name, 'teamQ')
+    steps:
+      - name: 'Move reopened issues to the "${{ env.in_progress }}" column'
+        uses: leonsteinhaeuser/project-beta-automations@v1.2.1
+        with:
+          gh_token: ${{ secrets.ISSUE_TRIAGE_TOKEN }}
+          organization: tarantool
+          project_id: 53
+          resource_node_id: ${{ github.event.issue.node_id }}
+          status_value: ${{ env.in_progress }}
