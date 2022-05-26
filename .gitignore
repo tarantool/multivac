@@ -12,6 +12,9 @@ workflow_run_jobs
 *.pyc
 __pycache__
 
+# IDEA
+.idea
+
 # Debug logs.
 debug.log
 
