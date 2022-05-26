@@ -8,7 +8,6 @@ import requests
 import json
 import datetime
 
-
 parser = argparse.ArgumentParser(description='Download GitHub Actions logs')
 parser.add_argument('--branch', type=str,
                     help='branch (all if omitted)')
@@ -32,7 +31,6 @@ if not os.path.isfile(token_file):
     raise RuntimeError('{file} is not a regular file'.format(file=token_file))
 with open(token_file, 'r') as f:
     token = f.read().strip()
-
 
 pid = os.getpid()
 startup_time = datetime.datetime.now(datetime.timezone.utc)
@@ -241,7 +239,7 @@ def workflow_runs_download_info(pages, pages_all, obj_count, obj_total, url,
             obj_total = min(obj_total, 1000)
 
     info('[pages {:2} / {:2}] [objects {:4} / {:4}] Download {}'.format(
-          pages, pages_all, obj_count, obj_total, url))
+        pages, pages_all, obj_count, obj_total, url))
 
 
 def workflow_runs_page_info(response):
@@ -327,75 +325,77 @@ def download_workflow_run_jobs(workflow_run_id):
         yield WorkflowRunJob(data)
 
 
-if not os.path.isdir(workflow_runs_dir):
-    os.makedirs(workflow_runs_dir)
-if not os.path.isdir(workflow_run_jobs_dir):
-    os.makedirs(workflow_run_jobs_dir)
+if __name__ == '__main__':
+    if not os.path.isdir(workflow_runs_dir):
+        os.makedirs(workflow_runs_dir)
+    if not os.path.isdir(workflow_run_jobs_dir):
+        os.makedirs(workflow_run_jobs_dir)
 
-ignore_in_stop_condition = set()
+    ignore_in_stop_condition = set()
 
-for run in download_workflow_runs(args.branch, args.since):
-    # Stop condition.
-    #
-    # If there are no stored runs, continue till the end (how much
-    # GitHub allows to download, it is 1000 runs).
-    #
-    # However we don't stop on a first known workflow run.
-    # A restarted workflow run keeps its position in the list
-    # (see [1]). So we re-check known runs and stop only when
-    # reach two weeks old runs (unlikely somebody will restart
-    # them).
-    #
-    # Actually this is not the optimal traverse algorithm, but
-    # it is simple to implement.
-    #
-    # [1]: https://github.community/t/135654
-    is_ignored = run.id in ignore_in_stop_condition
-    run_is_old = startup_time - run.created_at > datetime.timedelta(weeks=2)
-    if not args.nostop and run.is_stored and run_is_old and not is_ignored:
-        info('Found stored workflow run {} older than 2 weeks, stopping...',
-             run.id)
-        break
+    for run in download_workflow_runs(args.branch, args.since):
+        # Stop condition.
+        #
+        # If there are no stored runs, continue till the end (how much
+        # GitHub allows to download, it is 1000 runs).
+        #
+        # However we don't stop on a first known workflow run.
+        # A restarted workflow run keeps its position in the list
+        # (see [1]). So we re-check known runs and stop only when
+        # reach two weeks old runs (unlikely somebody will restart
+        # them).
+        #
+        # Actually this is not the optimal traverse algorithm, but
+        # it is simple to implement.
+        #
+        # [1]: https://github.community/t/135654
+        is_ignored = run.id in ignore_in_stop_condition
+        run_is_old = startup_time - run.created_at > \
+            datetime.timedelta(weeks=2)
+        if not args.nostop and run.is_stored and run_is_old and not is_ignored:
+            info('Found stored workflow run {} older than 2 weeks, '
+                 'stopping...', run.id)
+            break
 
-    # Skip incomplete runs. We'll look at them next time.
-    if run.status != 'completed':
-        reason = 'incomplete'
-        info('Skip workflow run {}: {}', run.id, reason)
-        continue
-
-    # Skip already processed runs if there were no restarts.
-    if run.is_stored:
-        run_past_info = WorkflowRun(filepath=run.meta_path)
-        if run.updated_at == run_past_info.updated_at:
-            info(("Workflow run {} was not changed ({}), don't download " +
-                 "jobs again"), run.id, run.updated_at)
+        # Skip incomplete runs. We'll look at them next time.
+        if run.status != 'completed':
+            reason = 'incomplete'
+            info('Skip workflow run {}: {}', run.id, reason)
             continue
-        info('Workflow run {} was updated ({} vs {}), downloading jobs...',
-             run.id, run_past_info.updated_at, run.updated_at)
 
-    # Download jobs meta.
-    jobs = list(download_workflow_run_jobs(run.id))
+        # Skip already processed runs if there were no restarts.
+        if run.is_stored:
+            run_past_info = WorkflowRun(filepath=run.meta_path)
+            if run.updated_at == run_past_info.updated_at:
+                info(("Workflow run {} was not changed ({}), don't download " +
+                      "jobs again"), run.id, run.updated_at)
+                continue
+            info('Workflow run {} was updated ({} vs {}), downloading jobs...',
+                 run.id, run_past_info.updated_at, run.updated_at)
 
-    # Skip if there are incomplete jobs.
-    incomplete_jobs = [job for job in jobs if job.status != 'completed']
-    if incomplete_jobs:
-        reason = 'incomplete jobs'
-        info('Skip workflow run {}: {}', run.id, reason)
-        continue
+        # Download jobs meta.
+        jobs = list(download_workflow_run_jobs(run.id))
 
-    # Download logs, store job meta and logs.
-    for job in jobs:
-        if not job.is_stored:
-            if not args.nologs:
-                job.download_log()
-            job.store()
+        # Skip if there are incomplete jobs.
+        incomplete_jobs = [job for job in jobs if job.status != 'completed']
+        if incomplete_jobs:
+            reason = 'incomplete jobs'
+            info('Skip workflow run {}: {}', run.id, reason)
+            continue
 
-    # Store workflow run meta (or update it).
-    run.store()
-    # A new workflow run may be created while the script works.
-    # So the same workflow run may appear twice: on page N and
-    # on page N+1. If we'll not ignore it in the stop condition,
-    # the first script invocation may stop prematurely.
-    ignore_in_stop_condition.add(run.id)
+        # Download logs, store job meta and logs.
+        for job in jobs:
+            if not job.is_stored:
+                if not args.nologs:
+                    job.download_log()
+                job.store()
+
+        # Store workflow run meta (or update it).
+        run.store()
+        # A new workflow run may be created while the script works.
+        # So the same workflow run may appear twice: on page N and
+        # on page N+1. If we'll not ignore it in the stop condition,
+        # the first script invocation may stop prematurely.
+        ignore_in_stop_condition.add(run.id)
 
 debug_log_fh.close()
