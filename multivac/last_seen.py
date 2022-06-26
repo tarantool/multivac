@@ -187,8 +187,8 @@ def write_html():
         write_line('        <td class="branch">{}</td>'.format(branch))
         write_line('        <td class="status">{}</td>'.format(status))
         write_line('        <td class="count">{}</td>'.format(count))
-        write_line('        <td class="url"><a href="{}">[log]</td>'.format(
-            url))
+        write_line('        <td class="url"><a href="{}">[log]</a></td>'.
+                   format(url))
         write_line('        <td class="runs_on">{}</td>'.format(runs_on))
         write_line('      </tr>')
     write_line('    </table>')
