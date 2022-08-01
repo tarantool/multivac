@@ -1,0 +1,19 @@
+Initializing the repository
+  /usr/bin/git init /home/ubuntu/actions-runner/_work/tarantool/tarantool
+  hint: Using 'master' as the name for the initial branch. This default branch name
+  hint: is subject to change. To configure the initial branch name to use in all
+  hint: of your new repositories, which will suppress this warning, call:
+  hint:
+  hint: 	git config --global init.defaultBranch <name>
+  hint:
+  hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+  hint: 'development'. The just-created branch can be renamed via this command:
+  hint:
+  hint: 	git branch -m <name>
+  Initialized empty Git repository in /home/ubuntu/actions-runner/_work/tarantool/tarantool/.git/
+  /usr/bin/git remote add origin https://github.com/tarantool/tarantool
+  Error: fatal: unsafe repository ('/home/ubuntu/actions-runner/_work/tarantool/tarantool' is owned by someone else)
+  To add an exception for this directory, call:
+
+  	git config --global --add safe.directory /home/ubuntu/actions-runner/_work/tarantool/tarantool
+  Error: The process '/usr/bin/git' failed with exit code 128

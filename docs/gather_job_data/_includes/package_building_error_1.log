@@ -1,0 +1,22 @@
+Install the project...
+-- Install configuration: "RelWithDebInfo"
+-- Installing: /Users/tntmac07.tarantool.i/actions-runner/_work/tarantool/tarantool/build/curl/dest/lib/libcurl.a
+...
+-- Installing: /Users/tntmac07.tarantool.i/actions-runner/_work/tarantool/tarantool/build/curl/dest/lib/cmake/CURL/CURLConfig.cmake
+[ 63%] Completed 'bundled-libcurl-project'
+[ 63%] Built target bundled-libcurl-project
+[ 63%] Built target build_bundled_libs
+make[3]: *** read jobs pipe: Resource temporarily unavailable.  Stop.
+make[3]: *** Waiting for unfinished jobs....
+[ 63%] Generating ../third_party/luajit/tools/utils/symtab.lua.c
+[ 63%] Generating lua/clock.lua.c
+[ 63%] Generating lua/buffer.lua.c
+[ 63%] Generating lua/csv.lua.c
+[ 63%] Generating lua/argparse.lua.c
+[ 65%] Generating lua/debug.lua.c
+[ 65%] Generating lua/datetime.lua.c
+[ 65%] Generating lua/crypto.lua.c
+make[2]: *** [src/CMakeFiles/server.dir/all] Error 2
+make[1]: *** [all] Error 2
+make: *** [build_osx] Error 2
+Error: Process completed with exit code 2.

@@ -1,0 +1,27 @@
+[052] vinyl/errinj_gc.test.lua                                        [ pass ]
+No output during 60 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+- 019_replication-luatest [replication-luatest/gh_6842_qsync_applier_order_test.lua, None] at /tmp/t/019_replication-luatest/gh_6842_qsync_applier_order.result:0
+No output during 120 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+- 019_replication-luatest [replication-luatest/gh_6842_qsync_applier_order_test.lua, None] at /tmp/t/019_replication-luatest/gh_6842_qsync_applier_order.result:0
+No output during 180 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+- 019_replication-luatest [replication-luatest/gh_6842_qsync_applier_order_test.lua, None] at /tmp/t/019_replication-luatest/gh_6842_qsync_applier_order.result:0
+No output during 240 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+- 019_replication-luatest [replication-luatest/gh_6842_qsync_applier_order_test.lua, None] at /tmp/t/019_replication-luatest/gh_6842_qsync_applier_order.result:0
+No output during 300 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+- 019_replication-luatest [replication-luatest/gh_6842_qsync_applier_order_test.lua, None] at /tmp/t/019_replication-luatest/gh_6842_qsync_applier_order.result:0
+No output during 360 seconds. Will abort after 320 seconds without output. List of workers not reporting the status:
+- 019_replication-luatest [replication-luatest/gh_6842_qsync_applier_order_test.lua, None] at /tmp/t/019_replication-luatest/gh_6842_qsync_applier_order.result:0
+Test hung! Result content mismatch:
+[File does not exist: replication-luatest/gh_6842_qsync_applier_order.result]
+
+[Main process] No output from workers. It seems that we hang. Send SIGKILL to workers; exiting...
+
+...
+
+---------------------------------------------------------------------------------
+Statistics:
+* pass: 1438
+* disabled: 53
+* undone: 38
+make: *** [.travis.mk:185: test_coverage_debian_no_deps] Error 1
+Error: Process completed with exit code 2.

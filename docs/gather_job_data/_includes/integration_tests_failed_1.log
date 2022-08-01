@@ -1,0 +1,8 @@
+Ran 411 tests in 565.815 seconds, 408 succeeded, 2 xfailed, 1 failed, 3 skipped
+
+=========================================================
+Failed tests:
+
+integration.raft.test_promote_errors
+
+Error: Process completed with exit code 1.

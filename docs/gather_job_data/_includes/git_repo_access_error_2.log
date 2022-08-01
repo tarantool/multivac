@@ -1,0 +1,2 @@
+fatal: unable to access 'https://github.com/tarantool/tarantool/': GnuTLS recv error (-54): Error in the pull function.
+Error: Process completed with exit code 128.

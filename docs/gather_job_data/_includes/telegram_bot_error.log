@@ -1,0 +1,6 @@
+ Sending commit message part as a single line: build: fix check-dependencies test on OS XTELEGRAMNEWLINETELEGRAMNEWLINECommit ed16c1e5780cf355ab9bf923ee6f9daf5b6363f8 (build: fix ...
+  File "<string>", line 1
+    import markdown ;   from bs4 import BeautifulSoup ;   md = markdown.markdown("build: fix check-dependencies test on OS XTELEGRAMNEWLINETELEGRAMNEWLINECommit ed16c1e5780cf355ab9bf923ee6f9daf5b6363f8 (build:
+                                                                                                                                                                                                                 ^
+SyntaxError: EOL while scanning string literal
+Error: Process completed with exit code 1.

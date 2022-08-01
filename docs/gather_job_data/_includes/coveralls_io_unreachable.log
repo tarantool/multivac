@@ -1,0 +1,22 @@
+Run coverallsapp/github-action@v1.1.2
+  with:
+    github-token: ***
+    path-to-lcov: ./coverage.info
+    coveralls-endpoint: https://coveralls.io
+  env:
+    VARDIR: /tmp/t
+    TEST_RUN_RETRIES: 3
+    SERVER_START_TIMEOUT: 290
+    REPLICATION_SYNC_TIMEOUT: 300
+    TEST_TIMEOUT: 310
+    NO_OUTPUT_TIMEOUT: 320
+    PRESERVE_ENVVARS: VARDIR,TEST_RUN_RETRIES,SERVER_START_TIMEOUT,REPLICATION_SYNC_TIMEOUT,TEST_TIMEOUT,NO_OUTPUT_TIMEOUT,GC64
+    AWS_DEFAULT_REGION: MS
+Using lcov file: ./coverage.info
+Error: Bad response: 405 <html>
+<head><title>405 Not Allowed</title></head>
+<body>
+<center><h1>405 Not Allowed</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>

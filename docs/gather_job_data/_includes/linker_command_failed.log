@@ -1,0 +1,17 @@
+[100%] Linking CXX executable watcher.test
+ld: error: undefined symbol: set_sigint_cb
+>>> referenced by console.c:261 (lua/console.c:261)
+>>>               console.c.o:(lbox_console_readline) in archive ../../src/box/libbox.a
+>>> referenced by console.c:342 (lua/console.c:342)
+>>>               console.c.o:(lbox_console_readline) in archive ../../src/box/libbox.a
+>>> referenced by console.c:352 (lua/console.c:352)
+>>>               console.c.o:(lbox_console_readline) in archive ../../src/box/libbox.a
+>>> referenced 1 more times
+c++: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[3]: *** [test/unit/CMakeFiles/watcher.test.dir/build.make:152: test/unit/watcher.test] Error 1
+gmake[3]: Leaving directory '/home/freebsd/.cache/act/2e58a162-8d47-4f5d-af53-51eff0852429/hostexecutor'
+gmake[2]: *** [CMakeFiles/Makefile2:10295: test/unit/CMakeFiles/watcher.test.dir/all] Error 2
+gmake[2]: Leaving directory '/home/freebsd/.cache/act/2e58a162-8d47-4f5d-af53-51eff0852429/hostexecutor'
+gmake[1]: *** [Makefile:156: all] Error 2
+gmake[1]: Leaving directory '/home/freebsd/.cache/act/2e58a162-8d47-4f5d-af53-51eff0852429/hostexecutor'
+*** Error code 2

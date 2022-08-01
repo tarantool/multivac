@@ -1,0 +1,12 @@
+Running Tarantool tests
+/home/ubuntu/actions-runner/_work/tarantool/tarantool/third_party/luajit/test/tarantool-tests/gh-4773-tonumber-fail-on-NUL-char.test.lua ........... ok
+/home/ubuntu/actions-runner/_work/tarantool/tarantool/third_party/luajit/test/tarantool-tests/gh-6065-jit-library-smoke-tests.test.lua ............. ok
+/home/ubuntu/actions-runner/_work/tarantool/tarantool/third_party/luajit/test/tarantool-tests/lj-505-fold-no-strref-for-ptrdiff.test.lua ........... ok
+/home/ubuntu/actions-runner/_work/tarantool/tarantool/third_party/luajit/test/tarantool-tests/gh-6189-cur_L.test.lua ............................... ok
+/home/ubuntu/actions-runner/_work/tarantool/tarantool/third_party/luajit/test/tarantool-tests/gh-4427-ffi-sandwich.test.lua ........................ ok
+/home/ubuntu/actions-runner/_work/tarantool/tarantool/third_party/luajit/test/tarantool-tests/misclib-getmetrics-capi.test.lua ..................... ok
+LuajitError: not enough memory
+fatal error, exiting the event loop
+/home/ubuntu/actions-runner/_work/tarantool/tarantool/third_party/luajit/test/tarantool-tests/misclib-sysprof-lapi.test.lua ........................
+Dubious, test returned 1 (wstat 256, 0x100)
+All 14 subtests passed

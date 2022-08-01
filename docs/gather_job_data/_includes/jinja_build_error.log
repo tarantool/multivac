@@ -1,0 +1,5 @@
+cmake --build . --parallel $(nproc)
+ninja: error: build.ninja:2151: multiple rules generate third_party/luajit/src/luajit [-w dupbuild=err]
+
+make: *** [.travis.mk:180: build_coverage_debian] Error 1
+Error: Process completed with exit code 2.
