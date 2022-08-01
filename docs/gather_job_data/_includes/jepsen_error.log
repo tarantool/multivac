@@ -1,0 +1,14 @@
+make[4]: *** [run-jepsen] Error 255
+CMakeFiles/run-jepsen.dir/build.make:61: recipe for target 'run-jepsen' failed
+make[3]: *** [CMakeFiles/run-jepsen.dir/all] Error 2
+make[4]: Leaving directory '/__w/tarantool/tarantool'
+make[2]: *** [CMakeFiles/run-jepsen.dir/rule] Error 2
+CMakeFiles/Makefile2:141: recipe for target 'CMakeFiles/run-jepsen.dir/all' failed
+make[3]: Leaving directory '/__w/tarantool/tarantool'
+CMakeFiles/Makefile2:148: recipe for target 'CMakeFiles/run-jepsen.dir/rule' failed
+make[2]: Leaving directory '/__w/tarantool/tarantool'
+make[1]: *** [run-jepsen] Error 2
+Makefile:210: recipe for target 'run-jepsen' failed
+make[1]: Leaving directory '/__w/tarantool/tarantool'
+make: *** [test_jepsen] Error 2
+.travis.mk:478: recipe for target 'test_jepsen' failed

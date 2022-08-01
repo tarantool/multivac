@@ -1,0 +1,23 @@
+make[4]: Leaving directory '/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu/build/curl/work/curl'
+cd "/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu/build/curl/work/curl" && /usr/bin/cmake -E touch "/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu/build/curl/work/stamp/bundled-libcurl-project-install"
+[ 52%] Completed 'bundled-libcurl-project'
+/usr/bin/cmake -E make_directory "/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu/CMakeFiles"
+/usr/bin/cmake -E touch "/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu/CMakeFiles/bundled-libcurl-project-complete"
+/usr/bin/cmake -E touch "/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu/build/curl/work/stamp/bundled-libcurl-project-done"
+make[3]: Leaving directory '/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu'
+[ 52%] Built target bundled-libcurl-project
+make[2]: Leaving directory '/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu'
+Makefile:152: recipe for target 'all' failed
+make[1]: *** [all] Error 2
+make[1]: Leaving directory '/build/tarantool-2.11.0~entrypoint.201.dev/obj-x86_64-linux-gnu'
+/usr/share/cdbs/1/class/makefile.mk:47: recipe for target 'debian/stamp-makefile-build' failed
+make: *** [debian/stamp-makefile-build] Error 2
+dpkg-buildpackage: error: debian/rules build gave error exit status 2
+debuild: fatal error at line 1376:
+dpkg-buildpackage -rfakeroot -D -us -uc -Zxz -j4 failed
+/pack//deb.mk:124: recipe for target '/build/tarantool_2.11.0~entrypoint.201.dev-1_amd64.changes' failed
+make: *** [/build/tarantool_2.11.0~entrypoint.201.dev-1_amd64.changes] Error 29
+rm /build/ls-lR.txt /build/VERSION
+make: Leaving directory '/source'
+make: *** [.gitlab.mk:112: package] Error 2
+Error: Process completed with exit code 2.

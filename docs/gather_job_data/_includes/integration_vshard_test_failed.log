@@ -1,0 +1,15 @@
+ ================================================================================
+TEST                                            PARAMS          RESULT
+---------------------------------------------------------------------------
+failover/cluster_changes.test.lua                               [ pass ]
+failover/failover.test.lua                                      [ fail ]
+
+...
+
+ ===== 1 tests failed:
+----- ('failover/failover.test.lua', None)
+make[3]: *** [test/CMakeFiles/test-force.dir/build.make:70: test/CMakeFiles/test-force] Error 255
+make[2]: *** [CMakeFiles/Makefile2:176: test/CMakeFiles/test-force.dir/all] Error 2
+make[1]: *** [CMakeFiles/Makefile2:183: test/CMakeFiles/test-force.dir/rule] Error 2
+make: *** [Makefile:182: test-force] Error 2
+Error: Process completed with exit code 2.

@@ -1,0 +1,11 @@
+---------------------------------------------------------------------------------
+Statistics:
+* disabled: 162
+* pass: 1369
+* fail: 2
+Failed tasks:
+- [vinyl-luatest/gh_6568_replica_initial_join_removal_of_compacted_run_files_test.lua,
+  null]
+# logfile:        /tmp/t/log/001_vinyl-luatest.log
+# reproduce file: /tmp/t/reproduce/001_vinyl-luatest.list.yaml
+---

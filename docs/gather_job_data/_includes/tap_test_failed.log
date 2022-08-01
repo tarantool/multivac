@@ -1,0 +1,26 @@
+not ok - failed subtests
+  ---
+  filename: ./test.lua
+  trace:
+  - line: 245
+    source: '@builtin/tap.lua'
+    filename: builtin/tap.lua
+    what: Lua
+    namewhat: method
+    name: test
+    src: builtin/tap.lua
+  - line: 0
+    source: '@./test.lua'
+    filename: ./test.lua
+    what: main
+    namewhat:
+    src: ./test.lua
+  planned: 4
+  failed: 1
+  line: 0
+  ...
+    # execution error test
+    1..2
+    ok - checking restart count
+    ok - Error task executed
+    # execution error test: end

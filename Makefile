@@ -9,3 +9,6 @@ lint:
 .PHONY: test
 test:
 	python -m unittest test.sensors.test_status_test
+
+autodoc:
+	./multivac/docs.py

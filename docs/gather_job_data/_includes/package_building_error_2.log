@@ -1,0 +1,6 @@
+/build/usr/src/debug/tarantool-2.11.0~entrypoint.201.dev/src/lib/core/datetime.c: At top level:
+cc1: error: unrecognized command line option '-Wno-cast-function-type' [-Werror]
+cc1: error: unrecognized command line option '-Wno-gnu-alignof-expression' [-Werror]
+cc1: all warnings being treated as errors
+make[3]: *** [src/lib/core/CMakeFiles/core.dir/build.make:834: src/lib/core/CMakeFiles/core.dir/datetime.c.o] Error 1
+make[3]: *** Waiting for unfinished jobs....

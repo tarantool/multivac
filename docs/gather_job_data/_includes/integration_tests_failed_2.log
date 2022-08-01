@@ -1,0 +1,11 @@
+Captured stderr:
+{"etcdserver":"2.3.8","etcdcluster":"2.3.0"}
+{"etcdserver":"2.3.8","etcdcluster":"2.3.0"}
+
+
+Ran 411 tests in 548.437 seconds, 408 succeeded, 2 xfailed, 1 failed, 2 skipped
+
+=========================================================
+Failed tests:
+
+integration.etcd2_client.test_longpolling

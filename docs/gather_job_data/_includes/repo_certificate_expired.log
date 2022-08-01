@@ -1,0 +1,22 @@
+sudo apt-get update  && \
+	sudo apt-get install -y -f libreadline-dev libunwind-dev
+Hit:1 http://ms1.clouds.archive.ubuntu.com/ubuntu focal InRelease
+Get:2 http://ms1.clouds.archive.ubuntu.com/ubuntu focal-updates InRelease [114 kB]
+Hit:3 https://download.docker.com/linux/ubuntu focal InRelease
+Get:4 http://ms1.clouds.archive.ubuntu.com/ubuntu focal-backports InRelease [108 kB]
+Ign:5 https://repo.zabbix.com/zabbix-agent2-plugins/1/ubuntu focal InRelease
+Get:6 http://ms1.clouds.archive.ubuntu.com/ubuntu focal-updates/main amd64 Packages [1935 kB]
+Get:7 http://ms1.clouds.archive.ubuntu.com/ubuntu focal-updates/main amd64 c-n-f Metadata [15.6 kB]
+Get:8 http://ms1.clouds.archive.ubuntu.com/ubuntu focal-updates/restricted amd64 Packages [1119 kB]
+Get:9 http://ms1.clouds.archive.ubuntu.com/ubuntu focal-updates/restricted amd64 c-n-f Metadata [592 B]
+Get:10 http://ms1.clouds.archive.ubuntu.com/ubuntu focal-updates/universe amd64 Packages [924 kB]
+Ign:11 https://repo.zabbix.com/zabbix/6.0/ubuntu focal InRelease
+Err:12 https://repo.zabbix.com/zabbix-agent2-plugins/1/ubuntu focal Release
+  Certificate verification failed: The certificate is NOT trusted. The certificate chain uses expired certificate.  Could not handshake: Error in the certificate verification. [IP: 178.128.6.101 443]
+Err:13 https://repo.zabbix.com/zabbix/6.0/ubuntu focal Release
+  Certificate verification failed: The certificate is NOT trusted. The certificate chain uses expired certificate.  Could not handshake: Error in the certificate verification. [IP: 178.128.6.101 443]
+Reading package lists...
+E: The repository 'https://repo.zabbix.com/zabbix-agent2-plugins/1/ubuntu focal Release' does not have a Release file.
+E: The repository 'https://repo.zabbix.com/zabbix/6.0/ubuntu focal Release' does not have a Release file.
+make: *** [.travis.mk:89: deps_ubuntu_ghactions] Error 100
+Error: Process completed with exit code 2.

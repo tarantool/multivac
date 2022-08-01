@@ -1,0 +1,7 @@
+ERROR:COMMIT_MESSAGE: Missing commit description - Add an appropriate one
+
+ERROR:NO_DOC: Please add doc or NO_DOC=<reason> tag
+ERROR:NO_CHANGELOG: Please add changelog or NO_CHANGELOG=<reason> tag
+ERROR:NO_TEST: Please add test or NO_TEST=<reason> tag
+total: 4 errors, 72 lines checked
+Commit 4a1714faf0c7 ("test flavor 8-16") has style problems, please review.

@@ -1,0 +1,22 @@
+Statistics:
+* pass: 1365
+* disabled: 159
+* skip: 4
+[Internal test-run error] The following tasks were dispatched to some worker task queue, but were not reported as done (does not matters success or fail):
+- [replication/replica_rejoin.test.lua, memtx]
+- [replication/gh-5426-election-on-off.test.lua, null]
+- [replication/gh-3711-misc-no-restart-on-same-configuration.test.lua, null]
+- [replication/skip_conflict_row.test.lua, memtx]
+- [replication/election_qsync.test.lua, vinyl]
+- [replication/box_set_replication_stress.test.lua, vinyl]
+- [replication/gc.test.lua, vinyl]
+- [replication/gh-5287-boot-anon.test.lua, memtx]
+- [replication/qsync_advanced.test.lua, vinyl]
+- [replication/qsync_basic.test.lua, vinyl]
+- [replication/gh-5445-leader-inconsistency.test.lua, null]
+- [replication/sync.test.lua, vinyl]
+- [replication/replica_rejoin.test.lua, vinyl]
+- [replication/replicaset_ro_mostly.test.lua, vinyl]
+- [replication/gc.test.lua, memtx]
+make: *** [run-test] Error 4
+Error: Process completed with exit code 2.

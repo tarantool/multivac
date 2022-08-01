@@ -1,0 +1,7 @@
+Run ./tools/gen-release-notes
+  ./tools/gen-release-notes
+  shell: /usr/bin/bash -e {0}
+  env:
+    CI_MAKE: make -f .travis.mk
+Unable to parse /home/ubuntu/actions-runner/_work/tarantool/tarantool/changelogs/unreleased/gh-6548-luajit-fixes.md: The first line should be a header, got 'Backported patches from vanilla LuaJIT trunk (gh-6548). In the scope of this'
+Error: Process completed with exit code 1.

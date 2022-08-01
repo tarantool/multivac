@@ -1,0 +1,11 @@
+ make[4]: Entering directory '/opt/actions-runner/_work/tarantool/tarantool'
+[  3%] Creating directories for 'bundled-libcurl-project'
+[  3%] No download step for 'bundled-libcurl-project'
+[  3%] No patch step for 'bundled-libcurl-project'
+[  4%] No update step for 'bundled-libcurl-project'
+[  4%] Performing configure step for 'bundled-libcurl-project'
+*** Do not use buildconf. Instead, just use: autoreconf -fi
+./buildconf: 4: exec: autoreconf: not found
+make[4]: *** [CMakeFiles/bundled-libcurl-project.dir/build.make:107: build/curl/work/stamp/bundled-libcurl-project-configure] Error 127
+make[4]: Leaving directory '/opt/actions-runner/_work/tarantool/tarantool'
+make[3]: *** [CMakeFiles/Makefile2:1288: CMakeFiles/bundled-libcurl-project.dir/all] Error 2

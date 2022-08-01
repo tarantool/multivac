@@ -1,0 +1,12 @@
+Errors while running CTest
+Output from these tests are in: /Users/tntmac04.tarantool.i/actions-runner/_work/tarantool/tarantool/static-build/Testing/Temporary/LastTest.log
+Use "--rerun-failed --output-on-failure" to re-run the failed cases verbosely.
+make: *** [build] Error 8
+4/4 Test #4: check-luarocks ...................   Passed    0.05 sec
+
+75% tests passed, 1 tests failed out of 4
+
+Total Test time (real) =   0.55 sec
+
+The following tests FAILED:
+	  1 - check-dependencies (Failed)

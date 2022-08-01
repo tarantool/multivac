@@ -1,0 +1,8 @@
+git clone https://github.com/packpack/packpack.git
+Cloning into 'packpack'...
+error: RPC failed; curl 56 GnuTLS recv error (-9): Error decoding the received TLS packet.
+fatal: the remote end hung up unexpectedly
+fatal: early EOF
+fatal: index-pack failed
+make: *** [.pack.mk:26: prepare] Error 128
+Error: Process completed with exit code 2.

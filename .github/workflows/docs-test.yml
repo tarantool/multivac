@@ -6,6 +6,8 @@ on:
       - 'docs/**'
       - 'README.md'
       - '.github/workflows/docs-test.yml'
+      - 'multivac/gather_job_data.py'
+      - 'multivac/sensors/failures.py'
 
 jobs:
   deploy-doc-branch:
@@ -33,6 +35,7 @@ jobs:
           ref: ${{github.head_ref}}
 
       - run: cp README.md docs/intro.md
+      - run: make autodoc
       - run: set -xe && cd docs && make -f ci.mk json
       - run: set -xe && cd docs && bash upload_output.sh
 
