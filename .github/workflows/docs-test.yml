@@ -1,0 +1,41 @@
+name: Deploy docs to test site
+
+on:
+  pull_request:
+jobs:
+  deploy-doc-branch:
+    runs-on: [ 'self-hosted', 'Linux', 'flavor-8-16' ]
+    container: tarantool/doc-builder:slim-4.2
+    env:
+      AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      AWS_DEFAULT_REGION: ru-msk
+      S3_ENDPOINT_URL: ${{secrets.S3_ENDPOINT_URL}}
+      S3_UPLOAD_PATH: ${{secrets.S3_UPLOAD_PATH}}
+      S3_BUCKET: ${{secrets.S3_BUCKET}}
+      DOCS_UPDATE_URL: ${{secrets.DOCS_DEVELOP_UPDATE_URL}}
+      DOCS_UPDATE_KEY: ${{secrets.DOCS_UPDATE_KEY}}
+      BRANCH_NAME: test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start dev server deployment
+        uses: bobheadxi/deployments@v0.5.2
+        id: deployment
+        with:
+          step: start
+          token: ${{secrets.GITHUB_TOKEN}}
+          env: ${{env.BRANCH_NAME}}
+          ref: ${{github.head_ref}}
+
+      - run: cp README.md docs/intro.md
+      - run: set -xe && cd docs && make -f ci.mk json
+      - run: set -xe && cd docs && bash upload_output.sh
+
+      - name: update deployment status
+        uses: bobheadxi/deployments@v0.5.2
+        with:
+          step: finish
+          token: ${{secrets.GITHUB_TOKEN}}
+          status: ${{job.status}}
+          deployment_id: ${{steps.deployment.outputs.deployment_id}}
+          env_url: https://docs.d.tarantool.io/en/dev/multivac/
