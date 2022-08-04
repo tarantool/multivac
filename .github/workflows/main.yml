@@ -14,7 +14,7 @@ jobs:
 
   collect_logs:
     needs: deploy
-    runs-on: self-hosted
+    runs-on: ['self-hosted', 'multivac-crawler']
     steps:
       - name: fetch.py for master
         run: ./multivac/fetch.py --branch master tarantool/tarantool
