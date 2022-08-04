@@ -9,11 +9,16 @@ import csv
 import argparse
 import importlib.resources as pkg_resources
 
+# secret.LOG_STORAGE_BUCKET_URL
+bucket_url = os.environ.get('LOG_STORAGE_BUCKET_URL').strip("'")
+if not bucket_url:
+    print('LOG_STORAGE_BUCKET_URL not set')
+    exit(1)
+org_repo = 'tarantool/tarantool'
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
 from multivac.sensors import test_status  # noqa: E402
-
 
 parser = argparse.ArgumentParser(description="""
     Search for fails and sort by last occurence.
@@ -28,7 +33,6 @@ parser.add_argument('--short', action='store_true',
 args = parser.parse_args()
 branch_list = args.branch
 result_format = args.format
-
 
 output_dir = 'output'
 workflow_runs_dir = 'workflow_runs'
@@ -71,8 +75,8 @@ for log in glob.glob(os.path.join(workflow_run_jobs_dir, '*.log')):
     if branch not in timestamps_max or timestamps_max[branch] < timestamp:
         timestamps_max[branch] = timestamp
 
-    url = job['html_url']
-
+    job_id = job['id']
+    run_id = job['run_id']
     # The idea of the --short option is that a user may not be
     # interested in separate results for, say, ubuntu-18.04 and
     # ubuntu-20.04. So we can just cut off everything after '-'.
@@ -84,15 +88,14 @@ for log in glob.glob(os.path.join(workflow_run_jobs_dir, '*.log')):
     for test, conf, status in fails(log):
         key = (test, conf, status, runs_on)
         if key not in res:
-            res[key] = (timestamp, branch, 1, url)
+            res[key] = (timestamp, branch, 1, job_id, run_id)
         elif res[key][0] < timestamp:
-            res[key] = (timestamp, branch, res[key][2] + 1, url)
+            res[key] = (timestamp, branch, res[key][2] + 1, job_id, run_id)
         else:
-            res[key] = (res[key][0], res[key][1], res[key][2] + 1, res[key][3])
+            res[key] = (res[key][0], res[key][1], res[key][2] + 1, res[key][3], res[key][4])
 
 res = sorted(res.items(), key=lambda kv: (kv[1][0], kv[1][2], kv[1][3]),
              reverse=True)
-
 
 output_fh = None
 
@@ -115,12 +118,17 @@ def write_csv():
               file=sys.stderr)
 
     w = csv.writer(output_fh)
-    write_line('timestamp,test,conf,branch,status,count,url,runs_on')
+    write_line('timestamp,test,conf,branch,status,count,runs_on,'
+               'url,job_json,job_log,run_json')
     for key, value in res:
         test, conf, status, runs_on = key
-        timestamp, branch, count, url = value
-        w.writerow([timestamp, test, conf, branch, status, count, url,
-                    runs_on])
+        timestamp, branch, count, job_id, run_id = value
+        url = f"https://github.com/{org_repo}/runs/{job_id}?check_suite_focus=true"
+        job_json = f'{bucket_url}/{org_repo}/workflow_run_jobs/{job_id}.json'
+        job_log = f'{bucket_url}/{org_repo}/workflow_run_jobs/{job_id}.log'
+        run_json = f'{bucket_url}/{org_repo}/workflow_runs/{run_id}.json'
+        w.writerow([timestamp, test, conf, branch, status, count, runs_on,
+                    url, job_json, job_log, run_json, ])
 
 
 def write_html_header():

@@ -1,3 +1,5 @@
 [flake8]
+max-line-length = 100
+exclude = venv,.venv
 per-file-ignores =
     test/sensors/test_status_test.py: E501
