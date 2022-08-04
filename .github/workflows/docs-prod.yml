@@ -20,7 +20,7 @@ jobs:
       S3_ENDPOINT_URL: ${{secrets.S3_ENDPOINT_URL}}
       S3_UPLOAD_PATH: ${{secrets.S3_UPLOAD_PATH}}
       S3_BUCKET: ${{secrets.S3_BUCKET}}
-      DOCS_UPDATE_URL: ${{secrets.DOCS_DEVELOP_UPDATE_URL}}
+      DOCS_UPDATE_URL: ${{secrets.DOCS_UPDATE_URL}}
       DOCS_UPDATE_KEY: ${{secrets.DOCS_UPDATE_KEY}}
       BRANCH_NAME: latest
     steps:
