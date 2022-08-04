@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ['self-hosted', 'multivac-crawler']
     steps:
       - name: update repo
         run: git pull
