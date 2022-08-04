@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - '.github/workflows/docs-prod.yml'
 jobs:
   deploy-doc-prod:
     runs-on: [ 'self-hosted', 'Linux', 'flavor-8-16' ]
