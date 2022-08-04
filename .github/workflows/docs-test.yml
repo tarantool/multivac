@@ -2,6 +2,11 @@ name: Deploy docs to test site
 
 on:
   pull_request:
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - '.github/workflows/docs-test.yml'
+
 jobs:
   deploy-doc-branch:
     runs-on: [ 'self-hosted', 'Linux', 'flavor-8-16' ]
