@@ -1,6 +1,7 @@
 name: Update test stats
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: 42 6-22/2 * * *
 
