@@ -1,0 +1,28 @@
+{
+  "7009010343": {
+    "job_name": "osx_11_aarch64",
+    "status": "success",
+    "queued_at": "2022-06-22T17:02:50Z",
+    "started_at": "2022-06-22T17:02:57Z",
+    "completed_at": "2022-06-22T17:05:49Z",
+    "runner_label": [
+      "macos-11-m1"
+    ],
+    "platform": "aarch64",
+    "runner_name": "tntmac07",
+    "runner_version": "2.293.0"
+  },
+  "7008230674": {
+    "job_name": "ubuntu_18_04 (gc64)",
+    "status": "failure",
+    "queued_at": "2022-06-22T16:13:47Z",
+    "started_at": "2022-06-22T16:14:15Z",
+    "completed_at": "2022-06-22T16:20:15Z",
+    "runner_label": [
+      "ubuntu-20.04-self-hosted"
+    ],
+    "platform": "amd64",
+    "runner_name": "ghacts-ce-extra-10",
+    "runner_version": "2.293.0"
+  }
+}

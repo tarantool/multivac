@@ -6,4 +6,5 @@ Multivac
     :caption: Contents:
 
     intro
+    gather_job_data
 
