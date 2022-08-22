@@ -67,6 +67,7 @@ def detect_error(logs: str) -> (str, str):
 class GatherData:
     def __init__(self, cli_args):
         self.workflow_run_jobs_dir = 'workflow_run_jobs'
+        self.workflow_runs_dir = 'workflow_runs'
         self.output_dir = 'output'
         self.gathered_data = dict()
         self.latest_n: int = cli_args.latest
@@ -92,8 +93,21 @@ class GatherData:
             else:
                 platform = 'amd64'
 
-            # Load info about jobs from .log, if there are logs
             job_id = job['id']
+
+            # Take data from GitHub Workflow runs API
+            run_file_path = f"{self.workflow_runs_dir}/{job['run_id']}.json"
+            try:
+                with open(run_file_path) as run_file:
+                    run = json.load(run_file)
+                    branch = run['head_branch']
+            except FileNotFoundError:
+                print(f"Job {job_id}: no runs found, can't open "
+                      f"{run_file_path}")
+            except ValueError:
+                print(f"Job {job_id}: can't decode JSON in {run_file_path}")
+
+            # Load info about jobs from .log, if there are logs
             logs = f'{self.workflow_run_jobs_dir}/{job_id}.log'
             job_failure_type = None
             runner_version = None
@@ -124,12 +138,14 @@ class GatherData:
             gathered_job_data = {
                 'job_id': job_id,
                 'job_name': job['name'],
+                'branch': branch,
+                'commit_sha': job['head_sha'],
                 'status': job['conclusion'],
                 'queued_at': time_queued,
                 'started_at': job['started_at'],
                 'completed_at': job['completed_at'],
+                'platform': platform,
                 'runner_label': job['labels'],
-                'platform': platform
             }
 
             if job['runner_name']:
@@ -160,8 +176,9 @@ class GatherData:
         fieldnames = [
             'job_id',
             'job_name',
+            'branch',
+            'commit_sha',
             'status',
-            'failure_type',
             'queued_at',
             'started_at',
             'completed_at',
@@ -169,6 +186,7 @@ class GatherData:
             'runner_label',
             'runner_name',
             'runner_version',
+            'failure_type',
         ]
         with open(output_file, 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
