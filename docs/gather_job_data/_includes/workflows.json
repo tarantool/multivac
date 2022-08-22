@@ -1,31 +1,35 @@
 {
-  "7009010343": {
-    "job_id": 7009010343,
-    "job_name": "osx_11_aarch64",
+  "7918651226": {
+    "job_id": 7918651226,
+    "job_name": "centos_8 (gc64)",
     "status": "success",
-    "queued_at": "2022-06-22T17:02:50Z",
-    "started_at": "2022-06-22T17:02:57Z",
-    "completed_at": "2022-06-22T17:05:49Z",
-    "runner_label": [
-      "macos-11-m1"
-    ],
-    "platform": "aarch64",
-    "runner_name": "tntmac07",
-    "runner_version": "2.293.0"
-  },
-  "7008230674": {
-    "job_id": 7008230674,
-    "job_name": "ubuntu_18_04 (gc64)",
-    "status": "failure",
-    "queued_at": "2022-06-22T16:13:47Z",
-    "started_at": "2022-06-22T16:14:15Z",
-    "completed_at": "2022-06-22T16:20:15Z",
+    "queued_at": "2022-08-19T13:01:30Z",
+    "started_at": "2022-08-19T13:01:41Z",
+    "completed_at": "2022-08-19T13:08:35Z",
     "runner_label": [
       "ubuntu-20.04-self-hosted"
     ],
     "platform": "amd64",
-    "runner_name": "ghacts-ce-extra-10",
-    "runner_version": "2.293.0",
-    "failure_type": "git_repo_access_error"
+    "commit_hash": "02fae15a3adb8ea450ebbe3c250a4846cf1cca69",
+    "branch": "master",
+    "runner_name": "ghacts-shared-8-16-n10",
+    "runner_version": "2.295.0"
+  },
+  "7918651223": {
+    "job_id": 7918651223,
+    "job_name": "opensuse_15_2 (gc64)",
+    "status": "failure",
+    "queued_at": "2022-08-19T13:01:30Z",
+    "started_at": "2022-08-19T13:01:44Z",
+    "completed_at": "2022-08-19T13:08:30Z",
+    "runner_label": [
+      "ubuntu-20.04-self-hosted"
+    ],
+    "platform": "amd64",
+    "commit_hash": "02fae15a3adb8ea450ebbe3c250a4846cf1cca69",
+    "branch": "master",
+    "runner_name": "ghacts-shared-8-16-n3",
+    "runner_version": "2.295.0",
+    "failure_type": "testrun_test_failed"
   }
 }
