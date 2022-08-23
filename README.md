@@ -1,6 +1,7 @@
 # Multivac
 
-It collects all troubles of CI.
+It collects data about workflow runs and workflow run jobs from
+[GitHub Api](https://docs.github.com/en/rest/actions/workflow-runs)
 
 ## Requirements
 
@@ -10,9 +11,10 @@ It collects all troubles of CI.
 ## How to use
 
 Add a token on [Personal access token][gh_token] GitHub page, give
-`repo:public_repo` access and copy the token to `token.txt`.
+`repo:public_repo` access and copy the token to `token.txt`. All the scripts
+should be started from the root of the project.
 
-Collect logs:
+### Collect logs:
 
 ```
 $ ./multivac/fetch.py --branch master tarantool/tarantool
@@ -25,7 +27,7 @@ If something went wrong during initial script run, you may re-run it with
 `--nostop` option: it disables stop heuristic. The heuristics is the following:
 stop on a two weeks old workflow run stored on a previous script call.
 
-Generate report:
+### Generate report:
 
 ```
 $ ./multivac/last_seen.py --branch master --branch 2.8 --branch 2.7 --branch 1.10
@@ -39,7 +41,16 @@ below), otherwise some logs may be missed. The script is designed to either
 collect meta + logs or just meta. If the meta is up-to-date, there is no cheap
 way to ensure that all relevant jobs are collected with logs.
 
-## Time spent in jobs
+### Get specific data about jobs:
+
+```bash
+./multivac/gather_job_data.py --format json
+```
+
+See more information on
+[website](https://www.tarantool.io/en/dev/multivac/gather_job_data/)
+
+### Get time spent in jobs:
 
 Collect jobs metainformation:
 
