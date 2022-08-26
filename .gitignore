@@ -4,7 +4,7 @@
 # Secret token for GitHub
 token.txt
 
-# Secret environmental variables
+# Secret environment variables
 .env
 
 # Fetched metainfo, logs, cached data views.
