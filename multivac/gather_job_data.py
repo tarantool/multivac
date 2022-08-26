@@ -8,6 +8,8 @@ import re
 import sys
 
 from sensors.failures import specific_failures, generic_failures, compile_failure_specs
+from datetime import datetime
+from influxdb import influx_connector
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
@@ -164,6 +166,50 @@ class GatherData:
                 )
             self.gathered_data[job_id] = gathered_job_data
 
+    def put_to_db(self):
+        influx_job_bucket = os.environ['INFLUX_JOB_BUCKET']
+        influx_org = os.environ['INFLUX_ORG']
+
+        write_api = influx_connector()
+
+        for job in list(self.gathered_data.keys()):
+            curr_job = self.gathered_data[job]
+
+            # Convert string to a datetime object, then convert it to unix
+            # time (seconds), then to timestamp in nanoseconds.
+            time_to_datetime = datetime.fromisoformat(
+                f"{curr_job['queued_at'].rstrip('Z')}+00:00")
+            time_to_unix = datetime.timestamp(time_to_datetime)
+            unix_ns_time = int(time_to_unix * 1000000000)
+
+            tags = {
+                'job_name': curr_job['job_name'],
+                'branch': curr_job['branch'],
+                'commit_sha': curr_job['commit_sha'],
+                'platform': curr_job['platform'],
+                'runner_label': curr_job['runner_label'],
+                'status': curr_job['status'],
+            }
+            if 'runner_version' in curr_job.keys():
+                tags['runner_version'] = curr_job['runner_version']
+            if 'runner_name' in curr_job.keys():
+                tags['runner_name'] = curr_job['runner_name']
+            if 'failure_type' in curr_job.keys():
+                tags['failure_type'] = curr_job['failure_type']
+
+            fields = {
+                'started_at': curr_job['started_at'],
+                'completed_at': curr_job['completed_at'],
+            }
+
+            data = {
+                'measurement': f'Job {job}',
+                'tags': tags,
+                'fields': fields,
+                'time': unix_ns_time
+            }
+            write_api.write(influx_job_bucket, influx_org, [data])
+
     def write_json(self):
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir)
@@ -207,7 +253,7 @@ class GatherData:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gather data about GitHub workflows')
     parser.add_argument(
-        '--format', choices=['json', 'csv'],
+        '--format', choices=['json', 'csv', 'influxdb'],
         help='write gathered data in the specified format'
     )
     parser.add_argument(
@@ -238,5 +284,7 @@ if __name__ == '__main__':
         result.write_json()
     if args.format == 'csv':
         result.write_csv()
+    if args.format == 'influxdb':
+        result.put_to_db()
     if args.failure_stats:
         result.print_failure_stats()

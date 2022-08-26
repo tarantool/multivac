@@ -34,6 +34,11 @@ Same with JSON:
 ..  literalinclude:: ./gather_job_data/_includes/workflows.json
     :language: json
 
+Or you can store data in InfluxDB (see :doc:`influxdb`):
+
+..  code-block:: console
+
+    $ multivac/gather_job_data.py --format influxdb
 
 Limiting and filtering workflows
 --------------------------------

@@ -14,6 +14,13 @@ Add a token on [Personal access token][gh_token] GitHub page, give
 `repo:public_repo` access and copy the token to `token.txt`. All the scripts
 should be started from the root of the project.
 
+You can set all necessary environment variables at `.env` file as in
+`.env-example` and then run the command:
+
+```bash
+source .env && export $(cut -d= -f1 .env)
+```
+
 ### Collect logs:
 
 ```
