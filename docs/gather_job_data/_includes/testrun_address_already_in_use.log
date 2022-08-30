@@ -1,0 +1,20 @@
+2022-08-25T11:18:47.3246765Z [051] box-py/bootstrap.test.py
+2022-08-25T11:18:47.3247301Z [051] [Instance "box"] Failed to start
+2022-08-25T11:18:47.3247697Z [051]
+2022-08-25T11:18:47.3248302Z [051] Last 15 lines of Tarantool Log file [Instance "box"][/tmp/t/051_box-py/box.log]:
+2022-08-25T11:18:47.3248946Z [051] Run console at unix/:/tmp/t/051_box-py/box.control
+2022-08-25T11:18:47.3249565Z [051] tcp_server: remove dead UNIX socket: /tmp/t/051_box-py/box.control
+2022-08-25T11:18:47.3250131Z [051] started
+2022-08-25T11:18:47.3250774Z [051] 2022-08-25 11:18:47.236 [44218] main/103/box I> Tarantool 2.11.0-entrypoint-404-gfbfa5aaf1
+2022-08-25T11:18:47.3251377Z [051] 2022-08-25 11:18:47.236 [44218] main/103/box I> log level 5
+2022-08-25T11:18:47.3265325Z [051] 2022-08-25 11:18:47.236 [44218] main/103/box I> wal/engine cleanup is paused
+2022-08-25T11:18:47.3266562Z [051] 2022-08-25 11:18:47.236 [44218] main/103/box I> mapping 117440512 bytes for memtx tuple arena...
+2022-08-25T11:18:47.3267565Z [051] 2022-08-25 11:18:47.236 [44218] main/103/box I> Actual slab_alloc_factor calculated on the basis of desired slab_alloc_factor = 1.044274
+2022-08-25T11:18:47.3268475Z [051] 2022-08-25 11:18:47.236 [44218] main/103/box I> mapping 134217728 bytes for vinyl tuple arena...
+2022-08-25T11:18:47.3269236Z [051] 2022-08-25 11:18:47.271 [44218] main/103/box I> update replication_synchro_quorum = 1
+2022-08-25T11:18:47.3270172Z [051] 2022-08-25 11:18:47.271 [44218] main/103/box I> instance uuid 7af31831-16cc-48fe-ae08-cf3cbaa20f5b
+2022-08-25T11:18:47.3271127Z [051] 2022-08-25 11:18:47.272 [44218] main/103/box evio.c:369 E> tx_binary: failed to bind on 127.0.0.1:41608: bind, called on fd 22, aka 0.0.0.0:0: Address already in use
+2022-08-25T11:18:47.3272079Z [051] 2022-08-25 11:18:47.273 [44218] main/103/box evio.c:375 E> SocketError: tx_binary: failed to bind, called on fd -1: Address already in use
+2022-08-25T11:18:47.3273095Z [051] 2022-08-25 11:18:47.273 [44218] main/103/box F> can't initialize storage: tx_binary: failed to bind, called on fd -1: Address already in use
+2022-08-25T11:18:47.3274062Z [051] 2022-08-25 11:18:47.273 [44218] main/103/box F> can't initialize storage: tx_binary: failed to bind, called on fd -1: Address already in use
+2022-08-25T11:18:47.3274563Z [051] [ fail ]

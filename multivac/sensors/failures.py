@@ -1,3 +1,5 @@
+import re
+
 failure_categories = [
     {
         'tag': 'git',
@@ -20,7 +22,21 @@ failure_categories = [
         'description': 'Internal Tarantool problem',
     }
 ]
-failure_specs = [
+
+specific_failures = [
+    {
+        'type': 'testrun_address_already_in_use',
+        're': [
+            r'.*Address already in use.*',
+        ],
+        'description':
+            'Test-run error with managing sockets. '
+            'See `tarantool/test-run#141 '
+            '<https://github.com/tarantool/test-run/issues/141>`__'
+    },
+]
+
+generic_failures = [
     {
         'type': 'git_unsafe_error',
         're': [r'.*fatal: unsafe repository.*'],
@@ -84,7 +100,6 @@ failure_specs = [
         're': [r'.*Test hung!.*'],
         'description': 'Test had started but did not return results.',
     },
-
     {
         'type': 'curl_error',
         're': [r'.*curl: \(22\) The requested URL returned error:.*'],
@@ -131,7 +146,6 @@ failure_specs = [
         're': [r'.*dpkg-buildpackage: error: debian/rules build.*'],
         'description': '',
     },
-
     {
         'type': 'git_submodule_error',
         're': [r'.*fatal: Needed a single revision.*'],
@@ -238,3 +252,10 @@ failure_specs = [
         'description': 'https://stackoverflow.com/questions/26734777/',
     },
 ]
+
+
+def compile_failure_specs(failure_specs):
+    for failure_type in failure_specs:
+        failure_type.update(
+            {'re_compiled': [re.compile(expression) for expression in failure_type['re']]}
+        )

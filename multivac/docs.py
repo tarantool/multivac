@@ -3,7 +3,7 @@
 import glob
 import os
 
-from sensors.failures import failure_specs
+from sensors.failures import specific_failures, generic_failures
 
 log_examples_path = 'docs/gather_job_data/'
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         )
 
         failure_specs_sorted = list(sorted(
-            failure_specs, key=lambda x: x['type']
+            generic_failures + specific_failures, key=lambda x: x['type']
         ))
         for failure_spec in failure_specs_sorted:
             failures_rst.writelines(describe_failure_type(failure_spec))
