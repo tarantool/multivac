@@ -7,7 +7,7 @@ import os
 import re
 import sys
 
-from sensors.failures import failure_specs
+from sensors.failures import specific_failures, generic_failures, compile_failure_specs
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
@@ -54,7 +54,7 @@ def reverse_readline(filename, buf_size=8192):
             yield segment
 
 
-def detect_error(logs: str) -> (str, str):
+def detect_error(logs: str, failure_specs: list) -> (str, str):
     for number, line in enumerate(reverse_readline(logs)):
         # check if the line matches one of regular expressions:
         for failure_type in failure_specs:
@@ -124,7 +124,9 @@ class GatherData:
                 print(f'no logs for job {job_id}')
 
             if job['conclusion'] == 'failure':
-                job_failure_type, failure_line = detect_error(logs)
+                job_failure_type, failure_line = detect_error(logs, specific_failures)
+                if job_failure_type == 'unknown':
+                    job_failure_type, failure_line = detect_error(logs, generic_failures)
                 if job_failure_type == self.watch_failure:
                     print(
                         f'{job_id}  {job["name"]}\t'
@@ -222,12 +224,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # compile regular expressions
-    for failure_type in failure_specs:
-        failure_type.update(
-            {'re_compiled': [re.compile(expression) for expression in failure_type['re']]}
-        )
+    compile_failure_specs(specific_failures)
+    compile_failure_specs(generic_failures)
 
-    results = {failure_type['type']: 0 for failure_type in failure_specs}
+    results = {failure_type['type']: 0 for failure_type in generic_failures}
+    results.update({failure_type['type']: 0 for failure_type in specific_failures})
     results.update({'unknown': 0})
     results.update({'total': 0})
 
