@@ -63,7 +63,7 @@ def detect_error(logs: str, failure_specs: list) -> (str, str):
             for regexp in failure_type['re_compiled']:
                 if regexp.match(line):
                     return failure_type['type'], line
-    return 'unknown', None
+    return 'unknown_failure', None
 
 
 class GatherData:
@@ -127,7 +127,7 @@ class GatherData:
 
             if job['conclusion'] == 'failure':
                 job_failure_type, failure_line = detect_error(logs, specific_failures)
-                if job_failure_type == 'unknown':
+                if job_failure_type == 'unknown_failure':
                     job_failure_type, failure_line = detect_error(logs, generic_failures)
                 if job_failure_type == self.watch_failure:
                     print(
@@ -141,10 +141,11 @@ class GatherData:
             # Save data to dict
             gathered_job_data = {
                 'job_id': job_id,
+                'workflow_run_id': job['run_id'],
                 'job_name': job['name'],
                 'branch': branch,
                 'commit_sha': job['head_sha'],
-                'status': job['conclusion'],
+                'conclusion': job['conclusion'],
                 'queued_at': time_queued,
                 'started_at': job['started_at'],
                 'completed_at': job['completed_at'],
@@ -172,7 +173,7 @@ class GatherData:
 
         write_api = influx_connector()
 
-        for job in list(self.gathered_data.keys()):
+        for job in list(self.gathered_data.keys())[:5]:
             curr_job = self.gathered_data[job]
 
             # Convert string to a datetime object, then convert it to unix
@@ -184,11 +185,12 @@ class GatherData:
 
             tags = {
                 'job_name': curr_job['job_name'],
+                'workflow_run_id': curr_job['run_id'],
                 'branch': curr_job['branch'],
                 'commit_sha': curr_job['commit_sha'],
                 'platform': curr_job['platform'],
                 'runner_label': curr_job['runner_label'],
-                'status': curr_job['status'],
+                'conclusion': curr_job['conclusion'],
             }
             if 'runner_version' in curr_job.keys():
                 tags['runner_version'] = curr_job['runner_version']
@@ -223,10 +225,11 @@ class GatherData:
         output_file = os.path.join(self.output_dir + '/workflows.csv')
         fieldnames = [
             'job_id',
+            'workflow_run_id',
             'job_name',
             'branch',
             'commit_sha',
-            'status',
+            'conclusion',
             'queued_at',
             'started_at',
             'completed_at',
@@ -275,7 +278,7 @@ if __name__ == '__main__':
 
     results = {failure_type['type']: 0 for failure_type in generic_failures}
     results.update({failure_type['type']: 0 for failure_type in specific_failures})
-    results.update({'unknown': 0})
+    results.update({'unknown_failure': 0})
     results.update({'total': 0})
 
     result = GatherData(args)
