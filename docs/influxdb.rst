@@ -64,9 +64,10 @@ To use our connector from your code, import the connector:
 InfluxDB connector in gather_job_data.py
 ----------------------------------------
 
--   **Measurement:** job ID;
--   **Tags:** job_name, branch, commit_sha, platform, runner_label;
--   **Fields:** status, started at, completed at;
+-   **Measurement:** failure type (or "successful jobs");
+-   **Tags:** job_name, job_id, run_id, branch, commit_sha, platform, status,
+    runner_label;
+-   **Fields:** time the job was in queue, time the job was in progress;
 -   **Time:** queued at.
 
 Usage:
