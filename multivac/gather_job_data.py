@@ -66,6 +66,15 @@ def detect_error(logs: str, failure_specs: list) -> (str, str):
     return 'unknown_failure', None
 
 
+def github_time_to_unix(time: str) -> float:
+    # Convert string to a datetime object, then convert it to unix
+    # time (seconds), then to timestamp in nanoseconds.
+    time_to_datetime = datetime.fromisoformat(
+        f"{time.rstrip('Z')}+00:00")
+    time_to_unix = datetime.timestamp(time_to_datetime)
+    return time_to_unix
+
+
 class GatherData:
     def __init__(self, cli_args):
         self.workflow_run_jobs_dir = 'workflow_run_jobs'
@@ -173,19 +182,22 @@ class GatherData:
 
         write_api = influx_connector()
 
-        for job in list(self.gathered_data.keys())[:5]:
+        for job in list(self.gathered_data.keys()):
             curr_job = self.gathered_data[job]
 
-            # Convert string to a datetime object, then convert it to unix
-            # time (seconds), then to timestamp in nanoseconds.
-            time_to_datetime = datetime.fromisoformat(
-                f"{curr_job['queued_at'].rstrip('Z')}+00:00")
-            time_to_unix = datetime.timestamp(time_to_datetime)
-            unix_ns_time = int(time_to_unix * 1000000000)
+            measurement = curr_job.get('failure_type') or curr_job['conclusion']
+
+            time_job_queued = github_time_to_unix(curr_job['queued_at'])
+            time_job_started = github_time_to_unix(curr_job['started_at'])
+            time_job_completed = github_time_to_unix(curr_job['completed_at'])
+
+            time_job_in_queue = time_job_started - time_job_queued
+            time_job_in_progress = time_job_completed - time_job_started
 
             tags = {
+                'job_id': curr_job['job_id'],
                 'job_name': curr_job['job_name'],
-                'workflow_run_id': curr_job['run_id'],
+                'workflow_run_id': curr_job['workflow_run_id'],
                 'branch': curr_job['branch'],
                 'commit_sha': curr_job['commit_sha'],
                 'platform': curr_job['platform'],
@@ -194,21 +206,22 @@ class GatherData:
             }
             if 'runner_version' in curr_job.keys():
                 tags['runner_version'] = curr_job['runner_version']
+
             if 'runner_name' in curr_job.keys():
                 tags['runner_name'] = curr_job['runner_name']
-            if 'failure_type' in curr_job.keys():
-                tags['failure_type'] = curr_job['failure_type']
 
             fields = {
-                'started_at': curr_job['started_at'],
-                'completed_at': curr_job['completed_at'],
+                'time_in_queue_sec': time_job_in_queue,
+                'time_in_progress_sec': time_job_in_progress,
             }
 
             data = {
-                'measurement': f'Job {job}',
+                'measurement': measurement,
                 'tags': tags,
                 'fields': fields,
-                'time': unix_ns_time
+                # We have `time_job_queued` in seconds, but InfluxDB precision
+                # is nanoseconds, convert
+                'time': int(time_job_queued * 1e9)
             }
             write_api.write(influx_job_bucket, influx_org, [data])
 
