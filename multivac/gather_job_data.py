@@ -182,17 +182,13 @@ class GatherData:
 
         write_api = influx_connector()
 
+        print('Start to write data to InfluxDB')
         for job in list(self.gathered_data.keys()):
             curr_job = self.gathered_data[job]
 
             measurement = curr_job.get('failure_type') or curr_job['conclusion']
 
             time_job_queued = github_time_to_unix(curr_job['queued_at'])
-            time_job_started = github_time_to_unix(curr_job['started_at'])
-            time_job_completed = github_time_to_unix(curr_job['completed_at'])
-
-            time_job_in_queue = time_job_started - time_job_queued
-            time_job_in_progress = time_job_completed - time_job_started
 
             tags = {
                 'job_id': curr_job['job_id'],
@@ -211,8 +207,7 @@ class GatherData:
                 tags['runner_name'] = curr_job['runner_name']
 
             fields = {
-                'time_in_queue_sec': time_job_in_queue,
-                'time_in_progress_sec': time_job_in_progress,
+                'value': 1
             }
 
             data = {
@@ -224,6 +219,8 @@ class GatherData:
                 'time': int(time_job_queued * 1e9)
             }
             write_api.write(influx_job_bucket, influx_org, [data])
+            print(f"Job {curr_job['job_id']} written to InfluxDB")
+        print('All data written to InfluxDB')
 
     def write_json(self):
         if not os.path.isdir(self.output_dir):
