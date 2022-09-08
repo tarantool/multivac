@@ -83,6 +83,24 @@ class GatherData:
         self.gathered_data = dict()
         self.latest_n: int = cli_args.latest
         self.watch_failure = args.watch_failure
+        self.since_seconds = None
+
+        since: str = cli_args.since
+        if since and len(since) > 1:
+            wrong_usage_message = 'Wrong \'--since\' option: got wrong {}. ' \
+                                  'Usage: NN[d|h], example: 42d.'
+            if since.endswith('d'):
+                try:
+                    self.since_seconds = int(since.rstrip('d')) * 86400
+                except ValueError:
+                    print(wrong_usage_message.format('number'))
+            elif since.endswith('h'):
+                try:
+                    self.since_seconds = int(since.rstrip('h')) * 3600
+                except ValueError:
+                    print(wrong_usage_message.format('number'))
+            else:
+                print(wrong_usage_message.format('unit'))
 
     def gather_data(self):
         job_json_files = sorted(glob.glob(
@@ -90,6 +108,8 @@ class GatherData:
             reverse=True)
         if self.latest_n:
             job_json_files = job_json_files[:self.latest_n]
+
+        curr_time = datetime.timestamp(datetime.now())
         for job_json in job_json_files:
 
             # Load info about jobs from .json
@@ -98,6 +118,11 @@ class GatherData:
 
             if job['conclusion'] in ['skipped', 'cancelled']:
                 continue
+
+            if self.since_seconds:
+                job_started = github_time_to_unix(job['started_at'])
+                if curr_time - job_started > self.since_seconds:
+                    continue
 
             if 'aarch64' in job['name']:
                 platform = 'aarch64'
@@ -279,6 +304,14 @@ if __name__ == '__main__':
     parser.add_argument(
         '--watch-failure', type=str,
         help='show detailed statistics about certain type of workflow failure')
+    parser.add_argument(
+        '--since', type=str,
+        help='Only take logs since... Usage: --since NN[d|h], '
+             'where NN - integer, d for days, h for hours.'
+             'Example: \'--since 2d\' option to process only jobs which ran in '
+             'the last two days, skip the rest. \'--since 5h \' is option to '
+             'process only the last 5 hours.'
+    )
 
     args = parser.parse_args()
 

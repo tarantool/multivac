@@ -51,6 +51,14 @@ To gather data from a number of most recent workflows, use `--latest`:
 
     $ ./multivac/gather_job_data.py --latest 1000
 
+To gather data for the last N days or N hours, use ``--since``:
+
+..  code-block:: console
+
+    $ # see data for the last week (7 days)
+    $ ./multivac/gather_job_data.py --since 7d
+    $ # see data for the last 12 hours
+    $ ./multivac/gather_job_data.py --since 12h
 
 Detecting workflow failure reasons
 ----------------------------------
