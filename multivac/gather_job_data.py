@@ -204,8 +204,7 @@ class GatherData:
     def put_to_db(self):
         influx_job_bucket = os.environ['INFLUX_JOB_BUCKET']
         influx_org = os.environ['INFLUX_ORG']
-
-        write_api = influx_connector()
+        data_list = list()
 
         print('Start to write data to InfluxDB')
         for job in list(self.gathered_data.keys()):
@@ -243,9 +242,14 @@ class GatherData:
                 # is nanoseconds, convert
                 'time': int(time_job_queued * 1e9)
             }
-            write_api.write(influx_job_bucket, influx_org, [data])
-            print(f"Job {curr_job['job_id']} written to InfluxDB")
-        print('All data written to InfluxDB')
+            data_list.append(data)
+            if len(data_list) == 1000:
+                write_api = influx_connector()
+                write_api.write(influx_job_bucket, influx_org, data_list)
+                data_list = []
+
+        write_api = influx_connector()
+        write_api.write(influx_job_bucket, influx_org, data_list)
 
     def write_json(self):
         if not os.path.isdir(self.output_dir):
