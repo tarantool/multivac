@@ -31,6 +31,15 @@ jobs:
         run: ./multivac/last_seen.py --branch master --branch 1.10 --branch 2.10
         working-directory: /mnt/storage/multivac
 
+      - name: write data to InfluxDB
+        env:
+          INFLUX_JOB_BUCKET: {{ secrets.INFLUX_JOB_BUCKET }}
+          INFLUX_TOKEN: {{ secrets.INFLUX_TOKEN }}
+          INFLUX_ORG: {{ secrets.INFLUX_ORG }}
+          INFLUX_URL: {{ secrets.INFLUX_URL }}
+        run: ./multivac/gather_job_data.py --format influxdb --since 2d
+        working-directory: /mnt/storage/multivac
+
       - name: Set the chat for failure notification
         if: failure()
         run: |
