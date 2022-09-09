@@ -8,6 +8,133 @@ It collects data about workflow runs and workflow run jobs from
 * Python 3
 * requests
 
+## API
+
+### fetch.py
+
+SYNOPSIS
+
+    ./multivac/fetch.py [OPTION] [owner/repo]
+
+
+DESCRIPTION
+
+    multivac/fetch.py — download workflow runs GitHub API, workflow run jobs
+    GitHub API and logs. Result stored in `workflow_runs` and `workflow_run_jobs`
+    directories in the root of the project.
+
+
+OPTIONS
+
+    --branch __branch__
+
+            Branch (all if omitted). To collect data about several branches, use
+            this option several times.
+
+    --nologs
+
+            Don't download logs
+
+    --nostop
+
+            Continue till end or rate limit
+
+    --since __N__
+
+            A workflow run list page to start from it. Default: 1
+
+
+EXAMPLE
+
+    Collect all data about workflow runs and workflow run jobs till the end
+    of rate limit from repository `tarantool/multivac` branches `master` and
+    `sample-branch`, but don't collect logs:
+
+```console 
+$ ./multivac/fetch.py --branch `master` --branch `sample-branch` --nologs --nostop tarantool/multivac
+```
+
+### last_seen.py
+
+SYNOPSIS
+
+    ./multivac/last_seen.py --branch __branch__ [OPTIONS]
+
+DESCRIPTION
+   
+    multivac/last_seen.py - generate common report from data collected by 
+    `multivac/fetch.py` and store it in `output` directory. By default, it
+    generates a report in CSV format.
+
+OPTIONS
+
+    --branch branch
+
+            Generate a report for a certain branch.
+
+    --format __[csv|html]__
+
+            Generate a report in CSV format or in HTML format.
+
+    --short
+
+            Coalesce 'runs-on' labels by a first word
+
+EXAMPLE
+
+    Generate a report in the HTML format for branches `master` and
+    `sample-branch`:
+
+```console
+$ ./multivac/last_seen.py --branch master --branch sample-branch --format html
+```
+
+### gather_job_data.py
+
+SYNOPSIS
+    
+    ./multivac/generate_job_data.py [OPTIONS]
+
+DESCRIPTION
+    
+    Get data about every completed job and group them by job ID. See the
+    parameters it collects on the
+    [website](https://www.tarantool.io/en/dev/multivac/gather_job_data/).
+
+OPTIONS
+    
+    --format __[csv|json|infuxdb]__
+    
+            Store gathered data as `workflows.csv` or `workflows.json` file in
+            `output` directory or store data in InfluxDB.
+    
+    --failure-stats
+    
+            Show overall failure statistics.
+    
+    --watch-failure __failure-type__
+    
+            Show detailed statistics about certain type of workflow failure. See
+            list of known failure types with `--failure-stats` option.
+    
+    --latest __N__
+    
+            Only take logs from the latest N workflow runs.
+    
+    --since __N[d|h]__
+    
+            Only take logs for jobs started N days or hours ago: Nd for N days
+            and Nh for N hours.
+
+EXAMPLE
+    
+    Collect data about jobs started a week ago and earlier and put them to the
+    InfluxDB:
+
+```console
+$ ./multivac/gather_job_data.py --since 7d --format influxdb
+```
+
 ## How to use
 
 Add a token on [Personal access token][gh_token] GitHub page, give
