@@ -135,6 +135,70 @@ EXAMPLE
 $ ./multivac/gather_job_data.py --since 7d --format influxdb
 ```
 
+### gather_test_data.py
+
+SYNOPSIS
+
+    ./multivac/gather_test_data.py [OPTIONS]
+
+DESCRIPTION
+
+    Get data about every failed test in the completed jobs and group them by
+    job ID: test name, test configuration, test number (to unicalize data in
+    InfluxDB for correct statistic calculation).
+
+OPTIONS
+
+    --format __[csv|infuxdb]__
+    
+            Store gathered data as `tests.json` file in `output` directory or
+            store data in InfluxDB. For JSON format - will rewrite file if
+            exists.
+            JSON example: 
+
+                "8301691934": [
+                {
+                  "name": "box/tx_man.test.lua",
+                  "configuration": null,
+                  "test_number": 0
+                },
+                {
+                  "name": "replication/qsync_advanced.test.lua",
+                  "configuration": "vinyl",
+                  "test_number": 1
+                },
+                ]
+
+            For InfluxDB, collects job name for tests to make graphics:
+                {
+                "measurement": test_name,
+                "tags": {
+                    'job_id': job_id,
+                    'configuration': test['configuration'],
+                    'job_name': metadata['job_name'],
+                    'commit_sha': metadata['commit_sha'],
+                    'test_number': test['test_number']
+                },
+                "fields": {
+                    "value": 1
+                },
+                "time": metadata["started_at"]
+                }
+    
+    --since __N[d|h]__
+    
+            Only take logs for jobs started N days or hours ago: Nd for N days
+            and Nh for N hours.
+
+EXAMPLE
+
+    Collect data about jobs started a week ago and earlier and put them to the
+    InfluxDB:
+
+```console
+$ ./multivac/gather_test_data.py --since 7d --format influxdb
+```
+
 ## How to use
 
 Add a token on [Personal access token][gh_token] GitHub page, give
