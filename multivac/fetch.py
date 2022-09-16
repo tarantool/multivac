@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import argparse
+import time
 import requests
 import json
 import datetime
@@ -44,6 +45,25 @@ workflow_runs_dir = 'workflow_runs'
 workflow_run_jobs_dir = 'workflow_run_jobs'
 
 
+def retry(http_get_function):
+    def wrapper(*args, **kwargs):
+        attempts = 10
+        while attempts:
+            try:
+                return http_get_function(*args, **kwargs)
+            except requests.exceptions.HTTPError as HTTPError:
+                if HTTPError.response.status_code // 100 == 4:
+                    raise
+                attempts -= 1
+                time.sleep(0.5)
+                debug(f'Got {HTTPError.response.status_code} error. '
+                      f'{attempts}th attempt to retry...')
+        raise StopIteration(
+            "All 10 retry operation attempts exhausted.")
+
+    return wrapper
+
+
 def timestamp():
     """ Format current time according to ISO 8601 standard. """
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -59,6 +79,7 @@ def info(fmt, *args):
     print(fmt.format(*args), file=sys.stderr)
 
 
+@retry
 def http_get(url, params=None):
     """ HTTP GET with logging to debug.log.
 
@@ -350,8 +371,7 @@ if __name__ == '__main__':
         #
         # [1]: https://github.community/t/135654
         is_ignored = run.id in ignore_in_stop_condition
-        run_is_old = startup_time - run.created_at > \
-            datetime.timedelta(weeks=2)
+        run_is_old = startup_time - run.created_at > datetime.timedelta(weeks=2)
         if not args.nostop and run.is_stored and run_is_old and not is_ignored:
             info('Found stored workflow run {} older than 2 weeks, '
                  'stopping...', run.id)
