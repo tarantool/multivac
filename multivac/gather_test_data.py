@@ -94,7 +94,7 @@ class GatherTestData:
         influx_org = os.environ['INFLUX_ORG']
         data_list = []
         print('Starting to write data to InfluxDB...')
-        for job_id in list(self.gathered_test_data.keys())[:2]:
+        for job_id in list(self.gathered_test_data.keys()):
             if not self.gathered_test_data[job_id]:
                 continue
             metadata = self.test_metadata[job_id]
@@ -120,11 +120,12 @@ class GatherTestData:
                 if len(data_list) == 1000:
                     write_api = influx_connector()
                     write_api.write(influx_test_bucket, influx_org, data_list)
+                    print('Chunk of 1000 records put to InfluxDB')
                     data_list = []
-                print('Chunk of 1000 records put to InfluxDB')
 
         write_api = influx_connector()
         write_api.write(influx_test_bucket, influx_org, data_list)
+        print(f'Chunk of {len(data_list)} records put to InfluxDB')
 
 
 if __name__ == '__main__':
