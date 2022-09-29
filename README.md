@@ -93,7 +93,7 @@ $ ./multivac/last_seen.py --branch master --branch sample-branch --format html
 
 SYNOPSIS
     
-    ./multivac/generate_job_data.py [OPTIONS]
+    ./multivac/gather_job_data.py [OPTIONS]
 
 DESCRIPTION
     
