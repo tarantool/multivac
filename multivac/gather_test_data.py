@@ -61,7 +61,7 @@ class GatherTestData:
             for test, conf, status in filter(lambda x: x[2] == "fail",
                                              test_status_iter(log_file_list)):
                 test_record = {'name': test,
-                               'configuration': conf,
+                               'configuration': conf or 'none',
                                'test_number': test_number}
                 test_number += 1
                 self.gathered_test_data[log_id].append(test_record)
