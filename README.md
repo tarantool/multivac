@@ -89,20 +89,24 @@ EXAMPLE
 $ ./multivac/last_seen.py --branch master --branch sample-branch --format html
 ```
 
-### gather_job_data.py
+### gather_data.py
 
 SYNOPSIS
     
-    ./multivac/gather_job_data.py [OPTIONS]
+    ./multivac/gather_data.py [OPTIONS]
 
 DESCRIPTION
     
-    Get data about every completed job and group them by job ID. See the
-    parameters it collects on the
-    [website](https://www.tarantool.io/en/dev/multivac/gather_job_data/).
+    Analyze logs and gather data about all finished jobs and tests which failed.
+    See the parameters it collects on the
+    [website](https://www.tarantool.io/en/dev/multivac/gather_data/).
 
 OPTIONS
     
+    --tests, -t
+            Collect data about test failures from test logs. Without this
+            option the script will collect data only about workflows.
+
     --format __[csv|json|infuxdb]__
     
             Store gathered data as `workflows.csv` or `workflows.json` file in
@@ -128,11 +132,11 @@ OPTIONS
 
 EXAMPLE
     
-    Collect data about jobs started a week ago and earlier and put them to the
-    InfluxDB:
+    Collect data about jobs and tests started a week ago or later, and put
+    this data to InfluxDB:
 
 ```console
-$ ./multivac/gather_job_data.py --since 7d --format influxdb
+$ ./multivac/gather_data.py -t --since 7d --format influxdb
 ```
 
 ### gather_test_data.py
@@ -242,7 +246,7 @@ way to ensure that all relevant jobs are collected with logs.
 ### Get specific data about jobs:
 
 ```bash
-./multivac/gather_job_data.py --format json
+./multivac/gather_data.py --format json
 ```
 
 See more information on

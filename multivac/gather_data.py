@@ -7,7 +7,9 @@ import os
 import re
 import sys
 
-from sensors.failures import specific_failures, generic_failures, compile_failure_specs
+from sensors.test_status import test_status_iter
+from sensors.failures import specific_failures, generic_failures, \
+    compile_failure_specs
 from datetime import datetime
 from influxdb import influx_connector
 
@@ -83,7 +85,11 @@ class GatherData:
         self.gathered_data = dict()
         self.latest_n: int = cli_args.latest
         self.watch_failure = args.watch_failure
+        self.tests_flag = cli_args.tests
         self.since_seconds = None
+
+        if args.format == 'influxdb':
+            self.influx_org = os.environ['INFLUX_ORG']
 
         since: str = cli_args.since
         if since and len(since) > 1:
@@ -102,6 +108,36 @@ class GatherData:
             else:
                 print(wrong_usage_message.format('unit'))
 
+    @staticmethod
+    def get_test_data(log_file) -> list:
+        """To use this function, you should open log file first and put lines
+        to a variable as a list. This function will call the `test_status`
+        sensor to collect data about failed tests: test name and configuration.
+        All attempts numbered for unicalization in InfluxDB.
+        Returns a list of dictionaries. Works only if option `-t` set."""
+
+        if not args.tests:
+            return []
+
+        test_attempt = 1
+        tests_data = []
+
+        for test_name, conf, status in filter(lambda x: x[2] == "fail",
+                                              test_status_iter(log_file)):
+            #  Check if the test retried to set correct attempt number
+            for test in tests_data[::-1]:
+                if test['name'] == test_name and test['conf'] == conf:
+                    test_attempt = test['test_attempt'] + 1
+                    break
+
+            test_record = {'name': test_name,
+                           'conf': conf or 'none',
+                           'test_attempt': test_attempt}
+            test_attempt = 1
+            tests_data.append(test_record)
+
+        return tests_data
+
     def gather_data(self):
         job_json_files = sorted(glob.glob(
             os.path.join(self.workflow_run_jobs_dir, '*[0-9].json')),
@@ -112,17 +148,21 @@ class GatherData:
         curr_time = datetime.timestamp(datetime.now())
         for job_json in job_json_files:
 
-            # Load info about jobs from .json
+            # Load info about jobs from job API JSON file
             with open(job_json, 'r') as f:
                 job = json.load(f)
 
+            # Don't process skipped and canceled job logs
             if job['conclusion'] in ['skipped', 'cancelled']:
                 continue
 
+            # We have files sorted descending, so when we meet the first job
+            # later than `since` argument, we know that all the following are
+            # later too
             if self.since_seconds:
                 job_started = github_time_to_unix(job['started_at'])
                 if curr_time - job_started > self.since_seconds:
-                    continue
+                    break
 
             if 'aarch64' in job['name']:
                 platform = 'aarch64'
@@ -130,6 +170,11 @@ class GatherData:
                 platform = 'amd64'
 
             job_id = job['id']
+
+            if 'gc64' in job['name']:
+                gc64 = 'True'
+            else:
+                gc64 = 'False'
 
             # Take data from GitHub Workflow runs API
             run_file_path = f"{self.workflow_runs_dir}/{job['run_id']}.json"
@@ -143,15 +188,17 @@ class GatherData:
             except ValueError:
                 print(f"Job {job_id}: can't decode JSON in {run_file_path}")
 
-            # Load info about jobs from .log, if there are logs
+            # Load info about jobs and tests from .log, if there are logs
             logs = f'{self.workflow_run_jobs_dir}/{job_id}.log'
             job_failure_type = None
             runner_version = None
             try:
-                with open(logs, 'r') as f:
-                    time_queued = f.readline()[0:19] + 'Z'
-                    for _ in range(10):
-                        line = f.readline()
+                with open(logs, 'r') as log_file:
+                    log_file_as_list = list(log_file)
+                    time_queued = log_file_as_list[0][0:19] + 'Z'
+                    test_data = self.get_test_data(log_file_as_list)
+                    for string in range(len(log_file_as_list[:10])):
+                        line = log_file_as_list[string]
                         match = version_matcher.search(line)
                         if match:
                             runner_version = match.group(1)
@@ -160,9 +207,12 @@ class GatherData:
                 print(f'no logs for job {job_id}')
 
             if job['conclusion'] == 'failure':
-                job_failure_type, failure_line = detect_error(logs, specific_failures)
+                # Detect failure type, collect total failures of certain type
+                job_failure_type, failure_line = detect_error(logs,
+                                                              specific_failures)
                 if job_failure_type == 'unknown_failure':
-                    job_failure_type, failure_line = detect_error(logs, generic_failures)
+                    job_failure_type, failure_line = detect_error(logs,
+                                                                  generic_failures)
                 if job_failure_type == self.watch_failure:
                     print(
                         f'{job_id}  {job["name"]}\t'
@@ -185,6 +235,7 @@ class GatherData:
                 'completed_at': job['completed_at'],
                 'platform': platform,
                 'runner_label': job['labels'],
+                'gc64': gc64
             }
 
             if job['runner_name']:
@@ -199,14 +250,18 @@ class GatherData:
                 gathered_job_data.update(
                     {'failure_type': job_failure_type}
                 )
+            if test_data:
+                gathered_job_data.update(
+                    {'failed_tests': test_data}
+                )
             self.gathered_data[job_id] = gathered_job_data
 
-    def put_to_db(self):
+    def put_to_db_job(self):
         influx_job_bucket = os.environ['INFLUX_JOB_BUCKET']
         influx_org = os.environ['INFLUX_ORG']
         data_list = list()
 
-        print('Start to write data to InfluxDB')
+        print('Writing job data to InfluxDB...')
         for job in list(self.gathered_data.keys()):
             curr_job = self.gathered_data[job]
 
@@ -223,6 +278,7 @@ class GatherData:
                 'platform': curr_job['platform'],
                 'runner_label': curr_job['runner_label'],
                 'conclusion': curr_job['conclusion'],
+                'gc64': curr_job['gc64']
             }
             if 'runner_version' in curr_job.keys():
                 tags['runner_version'] = curr_job['runner_version']
@@ -246,10 +302,50 @@ class GatherData:
             if len(data_list) == 1000:
                 write_api = influx_connector()
                 write_api.write(influx_job_bucket, influx_org, data_list)
+                print('Chunk of 1000 records put to InfluxDB')
                 data_list = []
 
         write_api = influx_connector()
         write_api.write(influx_job_bucket, influx_org, data_list)
+        print(f'Chunk of {len(data_list)} records put to InfluxDB')
+
+    def put_to_db_test(self):
+        influx_test_bucket = os.environ['INFLUX_TEST_BUCKET']
+        influx_org = os.environ['INFLUX_ORG']
+        data_list = []
+        print('Writing test data to InfluxDB...')
+        for job_id in filter(
+                lambda x: 'failed_tests' in list(self.gathered_data[x].keys()),
+                list(self.gathered_data.keys())):
+            for test in self.gathered_data[job_id].get('failed_tests'):
+                tags = {
+                    'job_id': job_id,
+                    'configuration': test['conf'],
+                    'job_name': self.gathered_data[job_id]['job_name'],
+                    'commit_sha': self.gathered_data[job_id]['commit_sha'],
+                    'test_attempt': test['test_attempt']
+                }
+                time = github_time_to_unix(
+                    self.gathered_data[job_id]['started_at'])
+                data = {
+                    'measurement': test['name'],
+                    'tags': tags,
+                    'fields': {
+                        'value': 1
+                    },
+                    'time': int(time * 1e9)
+
+                }
+                data_list.append(data)
+                if len(data_list) == 1000:
+                    write_api = influx_connector()
+                    write_api.write(influx_test_bucket, influx_org, data_list)
+                    print('Chunk of 1000 records put to InfluxDB')
+                    data_list = []
+
+        write_api = influx_connector()
+        write_api.write(influx_test_bucket, influx_org, data_list)
+        print(f'Chunk of {len(data_list)} records put to InfluxDB')
 
     def write_json(self):
         if not os.path.isdir(self.output_dir):
@@ -286,14 +382,16 @@ class GatherData:
 
     def print_failure_stats(self):
         if args.failure_stats:
-            sorted_results = list(sorted(results.items(), key=lambda x: x[1], reverse=True))
+            sorted_results = list(
+                sorted(results.items(), key=lambda x: x[1], reverse=True))
             for (type, count) in sorted_results:
                 if count > 0:
                     print(type, count)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Gather data about GitHub workflows')
+    parser = argparse.ArgumentParser(
+        description='Gather data about GitHub workflows')
     parser.add_argument(
         '--format', choices=['json', 'csv', 'influxdb'],
         help='write gathered data in the specified format'
@@ -316,6 +414,7 @@ if __name__ == '__main__':
              'the last two days, skip the rest. \'--since 5h \' is option to '
              'process only the last 5 hours.'
     )
+    parser.add_argument('--tests', '-t', action='store_true')
 
     args = parser.parse_args()
 
@@ -324,7 +423,8 @@ if __name__ == '__main__':
     compile_failure_specs(generic_failures)
 
     results = {failure_type['type']: 0 for failure_type in generic_failures}
-    results.update({failure_type['type']: 0 for failure_type in specific_failures})
+    results.update(
+        {failure_type['type']: 0 for failure_type in specific_failures})
     results.update({'unknown_failure': 0})
     results.update({'total': 0})
 
@@ -335,6 +435,8 @@ if __name__ == '__main__':
     if args.format == 'csv':
         result.write_csv()
     if args.format == 'influxdb':
-        result.put_to_db()
+        result.put_to_db_job()
+        if args.tests:
+            result.put_to_db_test()
     if args.failure_stats:
         result.print_failure_stats()

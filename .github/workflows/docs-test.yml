@@ -6,7 +6,7 @@ on:
       - 'docs/**'
       - 'README.md'
       - '.github/workflows/docs-test.yml'
-      - 'multivac/gather_job_data.py'
+      - 'multivac/gather_data.py'
       - 'multivac/sensors/failures.py'
 
 jobs:

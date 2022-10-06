@@ -6,6 +6,6 @@ Multivac
     :caption: Contents:
 
     intro
-    gather_job_data
+    gather_data
     influxdb
 

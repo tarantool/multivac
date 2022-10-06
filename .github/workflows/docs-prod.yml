@@ -9,7 +9,7 @@ on:
       - 'docs/**'
       - 'README.md'
       - '.github/workflows/docs-prod.yml'
-      - 'multivac/gather_job_data.py'
+      - 'multivac/gather_data.py'
       - 'multivac/sensors/failures.py'
 jobs:
   deploy-doc-prod:
