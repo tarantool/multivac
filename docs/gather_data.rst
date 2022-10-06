@@ -60,6 +60,104 @@ To gather data for the last N days or N hours, use ``--since``:
     $ # see data for the last 12 hours
     $ ./multivac/gather_job_data.py --since 12h
 
+Writing data to a JSON file
+---------------------------
+
+To gather workflow data and write it to a JSON file, use ``--format json``
+option. To gather data about tests as well, use ``--tests`` or ``-t`` option.
+
+..  code-block:: console
+
+    {
+    "8374189766": {
+        "job_id": 8374189766,
+        "workflow_run_id": 3061077644,
+        "job_name": "out_of_source",
+        "branch": "master",
+        "commit_sha": "416500fed508968d6d890eb3ec3620ef954d1d0a",
+        "conclusion": "success",
+        "queued_at": "2022-09-15T14:02:44Z",
+        "started_at": "2022-09-15T14:02:56Z",
+        "completed_at": "2022-09-15T14:08:45Z",
+        "platform": "amd64",
+        "runner_label": [
+            "ubuntu-20.04-self-hosted"
+          ],
+        "runner_name": "ghacts-shared-8-16-n17",
+        "runner_version": "2.296.2"
+        "tests": [
+            {
+            "name": "box/tx_man.test.lua",
+            "configuration": null,
+            "status": "fail",
+            "test_number": 0
+            },
+            {
+            "name": "replication/qsync_advanced.test.lua",
+            "configuration": "memtx",
+            "status": "fail",
+            "test_number": 1
+            }
+          ]
+        }
+      }
+
+Writing data to InfluxDB
+------------------------
+
+To write data to InfluxDB, you need to set credentials as environmental
+variables (see `.env-example` file). Add them to the ``.env`` file and
+activate with the command:
+
+..  code-block:: console
+
+    $ source .env && export $(cut -d= -f1 .env)
+
+Script uses different buckets for job data and test data.
+The job bucket receives the following structure:
+
+..  code-block:: console
+
+    {
+    "measurement":"failure_type or "success",
+    "tags":{
+        "job_id":"job ID",
+        "job_name":"job name",
+        "workflow_run_id":"workflow run ID",
+        "branch":"head branch",
+        "commit_sha":"head commit sha",
+        "gc64": "'True' or 'False', as a string,
+        "platform": "aarch64 or amd64 runner platform",
+        "runner_label":"runner label",
+        "runner_version":"runner version",
+        "runner_name":"runner name",
+        "conclusion":"job conclusion, success or failure"
+      },
+    "fields":{
+        "value":1
+      },
+    "time":"timestamp time the job started at, in nanoseconds"
+    }
+
+The test bucket receives the following structure:
+
+..  code-block:: console
+
+    {
+    "measurement": "test_name",
+    "tags": {
+        "job_id": job ID,
+        "configuration": test configuration,
+        "job_name": job name,
+        "commit_sha": head commit sha,
+        "test_attempt": number of test attempt
+      },
+    "fields": {
+        "value": 1
+      },
+    "time": "time the job started at, in nanoseconds"
+    }
+
 Detecting workflow failure reasons
 ----------------------------------
 

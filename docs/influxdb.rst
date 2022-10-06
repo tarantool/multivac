@@ -61,17 +61,28 @@ To use our connector from your code, import the connector:
     }
     write_api.write(bucket, org, [data])
 
-InfluxDB connector in gather_job_data.py
+InfluxDB connector in gather_data.py
 ----------------------------------------
 
+Job data:
+
 -   **Measurement:** failure type (or "successful jobs");
--   **Tags:** job_name, job_id, run_id, branch, commit_sha, platform, status,
-    runner_label;
--   **Fields:** time the job was in queue, time the job was in progress;
--   **Time:** queued at.
+-   **Tags:** job_name, job_id, run_id, branch, commit_sha, platform, conclusion,
+    runner_label, gc64;
+-   **Fields:** always: {"value": 1};
+-   **Time:** queued at, timestamp in nanoseconds.
+
+Test data:
+
+-   **Measurement:** test name;
+-   **Tags:** job_name, commit_sha, job_id, test_configuration, test_attempt;
+    The `test_attempt` increments if already stored this test with this
+    configuration for this job ID.
+-   **Fields:** always: {"value": 1};
+-   **Time:** queued at, timestamp in nanoseconds.
 
 Usage:
 
 ..  code-block:: console
 
-    $ multivac/gather_job_data.py --format influxdb
+    $ multivac/gather_data.py --format influxdb

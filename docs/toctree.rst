@@ -4,5 +4,5 @@
     :maxdepth: 7
 
     intro
-    gather_job_data
+    gather_data
     influxdb
