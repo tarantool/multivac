@@ -130,13 +130,36 @@ class GatherData:
                     test_attempt = test['test_attempt'] + 1
                     break
 
+            # Detect type of the test
+            test_type_name = test_name.split('/')[0]
+            test_subtype = 'None'
+            if test_type_name.endswith('tap'):
+                test_type = 'tap'
+            elif test_type_name.endswith('luatest'):
+                test_type = 'luatest'
+            else:
+                test_type = 'diff'
+                if test_type.endswith('py'):
+                    test_subtype = 'python'
+                elif 'sql' in test_type:
+                    test_subtype = 'sql'
             test_record = {'name': test_name,
                            'conf': conf or 'none',
+                           'test_type': test_type,
+                           'test_subtype': test_subtype,
                            'test_attempt': test_attempt}
             test_attempt = 1
             tests_data.append(test_record)
 
         return tests_data
+
+    @staticmethod
+    def get_release_or_debug(log_file):
+        for line in log_file:
+            if '| Target:' in line and \
+                    line.endswith('Debug\n'):
+                return 'True'
+        return 'False'
 
     def gather_data(self):
         job_json_files = sorted(glob.glob(
@@ -197,6 +220,7 @@ class GatherData:
                     log_file_as_list = list(log_file)
                     time_queued = log_file_as_list[0][0:19] + 'Z'
                     test_data = self.get_test_data(log_file_as_list)
+                    debug = self.get_release_or_debug(log_file_as_list)
                     for string in range(len(log_file_as_list[:10])):
                         line = log_file_as_list[string]
                         match = version_matcher.search(line)
@@ -235,7 +259,8 @@ class GatherData:
                 'completed_at': job['completed_at'],
                 'platform': platform,
                 'runner_label': job['labels'],
-                'gc64': gc64
+                'gc64': gc64,
+                'debug': debug,
             }
 
             if job['runner_name']:
@@ -278,7 +303,7 @@ class GatherData:
                 'platform': curr_job['platform'],
                 'runner_label': curr_job['runner_label'],
                 'conclusion': curr_job['conclusion'],
-                'gc64': curr_job['gc64']
+                'gc64': curr_job['gc64'],
             }
             if 'runner_version' in curr_job.keys():
                 tags['runner_version'] = curr_job['runner_version']
@@ -317,13 +342,20 @@ class GatherData:
         for job_id in filter(
                 lambda x: 'failed_tests' in list(self.gathered_data[x].keys()),
                 list(self.gathered_data.keys())):
-            for test in self.gathered_data[job_id].get('failed_tests'):
+            job_info = self.gathered_data[job_id]
+            for test in job_info.get('failed_tests'):
                 tags = {
-                    'job_id': job_id,
                     'configuration': test['conf'],
-                    'job_name': self.gathered_data[job_id]['job_name'],
-                    'commit_sha': self.gathered_data[job_id]['commit_sha'],
-                    'test_attempt': test['test_attempt']
+                    'test_type': test['test_type'],
+                    'test_subtype': test['test_subtype'],
+                    'debug': job_info['debug'],
+                    'job_id': job_id,
+                    'job_name': job_info['job_name'],
+                    'commit_sha': job_info['commit_sha'],
+                    'test_attempt': test['test_attempt'],
+                    'architecture': job_info['platform'],
+                    'gc64': job_info['gc64'],
+                    'os_version': job_info['runner_label'][0],
                 }
                 time = github_time_to_unix(
                     self.gathered_data[job_id]['started_at'])
