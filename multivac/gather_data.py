@@ -139,9 +139,9 @@ class GatherData:
                 test_type = 'luatest'
             else:
                 test_type = 'diff'
-                if test_type.endswith('py'):
+                if test_type_name.endswith('py'):
                     test_subtype = 'python'
-                elif 'sql' in test_type:
+                if 'sql' in test_type_name:
                     test_subtype = 'sql'
             test_record = {'name': test_name,
                            'conf': conf or 'none',
@@ -353,6 +353,7 @@ class GatherData:
                     'job_name': job_info['job_name'],
                     'commit_sha': job_info['commit_sha'],
                     'test_attempt': test['test_attempt'],
+                    'branch': job_info['branch'],
                     'architecture': job_info['platform'],
                     'gc64': job_info['gc64'],
                     'os_version': job_info['runner_label'][0],
