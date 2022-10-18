@@ -261,6 +261,7 @@ class GatherData:
                 'runner_label': job['labels'],
                 'gc64': gc64,
                 'debug': debug,
+                'html_url': job['html_url'],
             }
 
             if job['runner_name']:
@@ -380,6 +381,60 @@ class GatherData:
         write_api.write(influx_test_bucket, influx_org, data_list)
         print(f'Chunk of {len(data_list)} records put to InfluxDB')
 
+    def put_data_for_table_to_db(self):
+        influx_test_bucket = os.environ['INFLUX_TABLE_BUCKET']
+        influx_org = os.environ['INFLUX_ORG']
+        data_list = []
+        base_url = 'github.com/tarantool/tarantool'
+        s3_url = 'multivac.hb.bizmrg.com/tarantool/tarantool'
+        print('Writing data for tests table to InfluxDB...')
+        for job_id in filter(
+                lambda x: 'failed_tests' in list(self.gathered_data[x].keys()),
+                list(self.gathered_data.keys())):
+            job_info = self.gathered_data[job_id]
+            for test in job_info.get('failed_tests'):
+                tags = {
+                    'configuration': test['conf'],
+                    'test_type': test['test_type'],
+                    'test_subtype': test['test_subtype'],
+                    'debug': job_info['debug'],
+                    'job_id': job_id,
+                    'job_name': job_info['job_name'],
+                    'commit_sha': job_info['commit_sha'],
+                    'test_attempt': test['test_attempt'],
+                    'branch': job_info['branch'],
+                    'architecture': job_info['platform'],
+                    'gc64': job_info['gc64'],
+                    'os_version': job_info['runner_label'][0],
+                    'job_link': job_info['html_url'].lstrip('https://'),
+                    'commit_link': f"{base_url}/commit/{job_info['commit_sha']}",
+                    'job_json': f"{s3_url}/workflow_run_jobs/{job_id}.json",
+                    'job_log': f"{s3_url}/workflow_run_jobs/{job_id}.log",
+                    'workflow_run_json': f"{s3_url}/workflow_runs/"
+                                         f"{job_info['workflow_run_id']}.json"
+                }
+                time = github_time_to_unix(
+                    self.gathered_data[job_id]['started_at'])
+                data = {
+                    'measurement': test['name'],
+                    'tags': tags,
+                    'fields': {
+                        'value': 1
+                    },
+                    'time': int(time * 1e9)
+
+                }
+                data_list.append(data)
+                if len(data_list) == 1000:
+                    write_api = influx_connector()
+                    write_api.write(influx_test_bucket, influx_org, data_list)
+                    print('Chunk of 1000 records put to InfluxDB')
+                    data_list = []
+
+        write_api = influx_connector()
+        write_api.write(influx_test_bucket, influx_org, data_list)
+        print(f'Chunk of {len(data_list)} records put to InfluxDB')
+
     def write_json(self):
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir)
@@ -471,5 +526,6 @@ if __name__ == '__main__':
         result.put_to_db_job()
         if args.tests:
             result.put_to_db_test()
+            result.put_data_for_table_to_db()
     if args.failure_stats:
         result.print_failure_stats()
