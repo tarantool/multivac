@@ -35,6 +35,7 @@ jobs:
         env:
           INFLUX_JOB_BUCKET: ${{ secrets.INFLUX_JOB_BUCKET }}
           INFLUX_TEST_BUCKET: ${{ secrets.INFLUX_TEST_BUCKET }}
+          INFLUX_TABLE_BUCKET: ${{ secrets.INFLUX_TABLE_BUCKET }}
           INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
           INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
           INFLUX_URL: ${{ secrets.INFLUX_URL }}
