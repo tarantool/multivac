@@ -161,6 +161,19 @@ class GatherData:
                 return 'True'
         return 'False'
 
+    @staticmethod
+    def detect_os_version(job_name):
+        os_matcher = re.compile(r"[a-z]+_[0-9]+(_[0-9]+)?")
+        freebsd_matcher = re.compile(r"freebsd-[0-9]{2}")
+        os_match = os_matcher.search(job_name)
+        freebsd_match = freebsd_matcher.search(job_name)
+        if os_match:
+            return os_match.group()
+        elif freebsd_match:
+            freebsd_version = freebsd_match.group().split('-')[1]
+            return f'freebsd_{freebsd_version}'
+        return 'ubuntu_22_04'
+
     def gather_data(self):
         job_json_files = sorted(glob.glob(
             os.path.join(self.workflow_run_jobs_dir, '*[0-9].json')),
@@ -194,7 +207,7 @@ class GatherData:
 
             job_id = job['id']
 
-            if 'gc64' in job['name']:
+            if 'gc64' in job['name'] or platform == 'aarch64':
                 gc64 = 'True'
             else:
                 gc64 = 'False'
@@ -246,11 +259,15 @@ class GatherData:
                 results[job_failure_type] += 1
                 results['total'] += 1
 
+            # Get OS name and version
+            os_version = self.detect_os_version(job['name'])
+
             # Save data to dict
             gathered_job_data = {
                 'job_id': job_id,
                 'workflow_run_id': job['run_id'],
                 'job_name': job['name'],
+                'os_version': os_version,
                 'branch': branch,
                 'commit_sha': job['head_sha'],
                 'conclusion': job['conclusion'],
@@ -356,7 +373,7 @@ class GatherData:
                     'branch': job_info['branch'],
                     'architecture': job_info['platform'],
                     'gc64': job_info['gc64'],
-                    'os_version': job_info['runner_label'][0],
+                    'os_version': job_info['os_version'],
                 }
                 time = github_time_to_unix(
                     self.gathered_data[job_id]['started_at'])
