@@ -1,0 +1,26 @@
+name: Update test stats
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 30 20 * * *
+
+jobs:
+  deploy:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    steps:
+      - name: Sync workflow_runs
+        run: ./backup.sh workflow_runs
+
+      - name: Sync workflow_run_jobs
+        run: ./backup.sh workflow_run_jobs
+
+      - name: Send notification
+        if: failure()
+        uses: dasshit/myteam-notify@master
+        with:
+          api-url: ${{ secrets.MYTEAM_BOT_API }}
+          bot-token: ${{ secrets.MYTEAM_BOT_TOKEN }}
+          chat-id: ${{ env.CHAT_ID }}
+          msg-text: "multivac s3 sync failure:
+                    https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
