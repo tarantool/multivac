@@ -1,0 +1,60 @@
+name: Create test bucket
+
+on:
+  pull_request:
+      types: [ opened, reopened ]
+
+jobs:
+  create-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    strategy:
+      matrix:
+        label: ['tests', 'workflows', 'table']
+    env:
+        INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+        INFLUX_ORG: ${{ secrets.INFLUX_ORG_ID }}
+        INFLUX_URL: ${{ secrets.INFLUX_URL }}
+        BUCKET_BASE: '${{ github.head_ref }}-${{ matrix.label }}'
+
+    steps:
+      - name: Get bucket name (strip username)
+        run: |
+          echo 'BUCKET_NAME<<EOF' >> $GITHUB_ENV
+            echo ${BUCKET_BASE} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Create bucket
+        run: |
+          # expire in 15 days
+          echo 'ARTIFACT_NAME<<EOF' >> $GITHUB_ENV
+          curl --request POST \
+            "https://influxdb.tarantool.io/api/v2/buckets" \
+            --header "Authorization: Token ${INFLUX_TOKEN}" \
+            --header "Content-type: application/json" \
+            --data '{
+              "orgID": "'"${INFLUX_ORG}"'",
+              "name": "${{ env.BUCKET_NAME }}",
+              "retentionRules": [
+                {
+                  "type": "expire",
+                  "everySeconds": 1296000,
+                  "shardGroupDurationSeconds": 0
+                }
+              ]
+            }' | jq '.id' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Save bucket ID
+        run: |
+          if [[ ${{ env.ARTIFACT_NAME }} ]]; then
+            echo ${{ env.ARTIFACT_NAME }} > ${{ env.BUCKET_NAME }}-id
+          else
+            exit 1
+          fi
+
+      - name: Fill the bucket
+        uses: ./.github/actions/write_to_db
+        with:
+          influx_token: ${{ secrets.INFLUX_TOKEN }}
+          influx_url: ${{ secrets.INFLUX_URL }}
+
