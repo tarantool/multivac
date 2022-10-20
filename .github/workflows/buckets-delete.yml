@@ -1,0 +1,43 @@
+name: Delete test bucket
+
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  delete-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    strategy:
+      matrix:
+        label: ['tests', 'workflows', 'table']
+    env:
+      INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+      INFLUX_ORG: ${{ secrets.INFLUX_ORG_ID }}
+      INFLUX_URL: ${{ secrets.INFLUX_URL }}
+      BUCKET_BASE: '${{ github.head_ref }}-${{ matrix.label }}'
+
+    steps:
+      - name: Get bucket name (strip username)
+        run: |
+          echo 'BUCKET_NAME<<EOF' >> $GITHUB_ENV
+            echo ${BUCKET_BASE} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Get artefact
+        uses: actions/download-artifact@v3
+          with:
+            name: ${{ env.BUCKET_NAME }}-id
+
+      - name: Get bucket ID
+        run: |
+          echo 'BUCKET_ID<<EOF' >> $GITHUB_ENV
+            cat ${{ env.BUCKET_NAME }}-id >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Delete bucket
+        run: |
+          curl --request DELETE \
+            "https://influxdb.tarantool.io/api/v2/buckets/${{ env.BUCKET_ID }}" \
+            --header "Authorization: Token ${INFLUX_TOKEN}" \
+            --header "Content-type: application/json"
+          rm ${{ env.BUCKET_NAME }}-id
