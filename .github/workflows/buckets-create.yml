@@ -1,0 +1,101 @@
+name: Create test bucket
+
+on:
+  pull_request:
+      types: [ opened, reopened ]
+      paths:
+        - '.github/workflows/buckets-*'
+        - '.github/action/write-to-db/action.yml'
+        - 'multivac/gather_data.py'
+        - 'multivac/influxdb.py'
+        - 'multivac/sensors/test_status.py'
+
+jobs:
+  create-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    strategy:
+      matrix:
+        label: ['tests', 'workflows', 'table']
+    env:
+        INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+        INFLUX_ORG: ${{ secrets.INFLUX_ORG_ID }}
+        INFLUX_URL: ${{ secrets.INFLUX_URL }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get deployment name
+        run: |
+          echo 'DEPLOYMENT_NAME<<EOF' >> $GITHUB_ENV
+            echo ${{ github.head_ref }} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Get bucket name (strip username)
+        run: echo 'BUCKET_NAME=${{ env.DEPLOYMENT_NAME }}-${{ matrix.label }}' >> $GITHUB_ENV
+
+      - name: Create bucket
+        run: |
+          # expire in 30 days = 2592000 seconds
+          echo 'ARTIFACT_NAME<<EOF' >> $GITHUB_ENV
+          curl --request POST \
+            "${{ secrets.INFLUX_URL }}/api/v2/buckets" \
+            --header "Authorization: Token ${{ env.INFLUX_TOKEN }}" \
+            --header "Content-type: application/json" \
+            --data '{
+              "orgID": "'"${{ env.INFLUX_ORG }}"'",
+              "name": "${{ env.BUCKET_NAME }}",
+              "retentionRules": [
+                {
+                  "type": "expire",
+                  "everySeconds": 2592000,
+                  "shardGroupDurationSeconds": 0
+                }
+              ]
+            }' | jq '.id' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Save bucket ID
+        run: |
+          if [[ ${{ env.ARTIFACT_NAME != null }} ]]; then
+            echo ${{ env.ARTIFACT_NAME }} > ${{ env.BUCKET_NAME }}-id
+          else
+            exit 1
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.BUCKET_NAME }}-id
+          path: ${{ env.BUCKET_NAME }}-id
+
+  fill-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    needs: create-bucket
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fill the bucket
+        uses: ./.github/actions/write_to_db
+        with:
+          influx_token: ${{ secrets.INFLUX_TOKEN }}
+          influx_url: ${{ secrets.INFLUX_URL }}
+          deployment_url: ${{ secrets.DEPLOYMENT_URL }}
+
+      - name: start deployment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ github.token }}
+          env: dev-${{ env.DEPLOYMENT_NAME }}
+          ref: ${{ github.head_ref }}
+
+      - name: update deployment status
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          token: ${{ github.token }}
+          env: dev-${{ env.DEPLOYMENT_NAME }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ secrets.DEPLOYMENT_URL }}&var-bucket=${{ env.INFLUX_TEST_BUCKET }}&var-bucket_table=${{ env.INFLUX_TABLE_BUCKET }}

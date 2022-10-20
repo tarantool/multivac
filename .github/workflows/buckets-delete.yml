@@ -1,0 +1,59 @@
+name: Delete test bucket
+
+on:
+  pull_request:
+    types: [ closed ]
+    paths:
+      - '.github/workflows/buckets-*'
+      - '.github/action/write-to-db/action.yml'
+      - 'multivac/gather_data.py'
+      - 'multivac/influxdb.py'
+      - 'multivac/sensors/test_status.py'
+
+jobs:
+  delete-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    strategy:
+      matrix:
+        label: ['tests', 'workflows', 'table']
+    env:
+      INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+      INFLUX_ORG: ${{ secrets.INFLUX_ORG_ID }}
+      INFLUX_URL: ${{ secrets.INFLUX_URL }}
+
+    steps:
+      - name: Get deployment name
+        run: |
+          echo 'DEPLOYMENT_NAME<<EOF' >> $GITHUB_ENV
+            echo ${{ github.head_ref }} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Get bucket name (strip username)
+        run: echo 'BUCKET_NAME=${{ env.DEPLOYMENT_NAME }}-${{ matrix.label }}' >> $GITHUB_ENV
+
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: buckets-create.yml
+          branch: ${{ github.head_ref }}
+          name: ${{ env.BUCKET_NAME }}-id
+
+      - name: Get bucket ID
+        run: |
+          echo 'BUCKET_ID<<EOF' >> $GITHUB_ENV
+            cat ${{ env.BUCKET_NAME }}-id >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Delete bucket
+        run: |
+          curl --request DELETE \
+            "${{ secrets.INFLUX_URL }}/api/v2/buckets/${{ env.BUCKET_ID }}" \
+            --header "Authorization: Token ${{ env.INFLUX_TOKEN }}" \
+            --header "Content-type: application/json"
+
+      - name: Remove GitHub deployment at branch-${{ env.DEPLOYMENT_NAME }}
+        uses: bobheadxi/deployments@v1
+        with:
+          step: delete-env
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: dev-${{ env.DEPLOYMENT_NAME }}
+
