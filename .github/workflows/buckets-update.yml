@@ -1,0 +1,103 @@
+name: Update test bucket
+
+on:
+  pull_request:
+    types: [ synchronize ]
+    paths:
+      - '.github/workflows/*'
+      - 'multivac/gather_data.py'
+      - 'multivac/influxdb.py'
+      - 'multivac/fetch.py'
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/*'
+      - 'multivac/gather_data.py'
+      - 'multivac/influxdb.py'
+      - 'multivac/fetch.py'
+
+jobs:
+  clear-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    strategy:
+      matrix:
+        label: ['tests', 'workflows', 'table']
+    env:
+      INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+      INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
+      INFLUX_URL: ${{ secrets.INFLUX_URL }}
+      BUCKET_BASE: '${{ github.head_ref }}-${{ matrix.label }}'
+
+    steps:
+      - name: Get bucket name (strip username)
+        run: |
+          if '${{ github.event_name }}'=='pull_request'; then
+            echo 'BUCKET_NAME<<EOF' >> $GITHUB_ENV
+              echo ${BUCKET_BASE} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+          else
+            echo 'BUCKET_NAME=multivac-${{ matrix.label }}' >> $GITHUB_ENV
+          fi
+
+      - name: Get start and stop time
+        run: |
+          echo ${{ env.BUCKET_MASTER_NAME }}
+          echo 'START_TIME<<EOF' >> $GITHUB_ENV
+            date -d 'last month' -I >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+          echo 'STOP_TIME<<EOF' >> $GITHUB_ENV
+            date -I >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Clear the data
+        run: |
+          curl --request POST \
+            "https://influxdb.tarantool.io/api/v2/delete?org=${{ env.INFLUX_ORG }}&bucket=${{ env.BUCKET_NAME }}" \
+            --header 'Authorization: Token ${{ env.INFLUX_TOKEN }}' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "start": "${{ env.START_TIME }}T00:00:00Z",
+              "stop": "${{ env.STOP_TIME }}T23:59:00Z"
+            }'
+
+  write-data:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    needs: clear-bucket
+    env:
+      INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+      INFLUX_ORG: ${{ secrets.INFLUX_ORG_ID }}
+      INFLUX_URL: ${{ secrets.INFLUX_URL }}
+      BUCKET_PROD: 'multivac'
+
+    steps:
+      - name: Get bucket base
+        run: |
+          if "${{ github.event_name }}" == "pull_request"; then
+            echo 'BUCKET_BASE<<EOF' >> $GITHUB_ENV
+              echo '${{ github.head_ref }}' | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+          else
+            echo 'BUCKET_BASE=${{ env.BUCKET_PROD }}' >> $GITHUB_ENV
+          fi
+
+      - name: Get bucket names
+        run: |
+          echo 'INFLUX_JOB_BUCKET=${{ env.BUCKET_BASE }}-workflows' >> $GITHUB_ENV
+          echo 'INFLUX_TEST_BUCKET=${{ env.BUCKET_BASE }}-tests' >> $GITHUB_ENV
+          echo 'INFLUX_TABLE_BUCKET=${{ env.BUCKET_BASE }}-table' >> $GITHUB_ENV
+
+      - name: Write dara to InfluxDB
+        env:
+          INFLUX_JOB_BUCKET: ${{ env.INFLUX_JOB_BUCKET }}
+          INFLUX_TEST_BUCKET: ${{ env.INFLUX_TEST_BUCKET }}
+          INFLUX_TABLE_BUCKET: ${{ env.INFLUX_TABLE_BUCKET }}
+          INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+          INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
+          INFLUX_URL: ${{ secrets.INFLUX_URL }}
+        run: |
+          source venv/bin/activate
+          pip install -r requirements.txt
+          ./multivac/gather_data.py -t --format influxdb --since 30d
+        working-directory: /mnt/storage/multivac
