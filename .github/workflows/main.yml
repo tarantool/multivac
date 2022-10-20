@@ -32,18 +32,11 @@ jobs:
         working-directory: /mnt/storage/multivac
 
       - name: write data to InfluxDB
-        env:
-          INFLUX_JOB_BUCKET: ${{ secrets.INFLUX_JOB_BUCKET }}
-          INFLUX_TEST_BUCKET: ${{ secrets.INFLUX_TEST_BUCKET }}
-          INFLUX_TABLE_BUCKET: ${{ secrets.INFLUX_TABLE_BUCKET }}
-          INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
-          INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
-          INFLUX_URL: ${{ secrets.INFLUX_URL }}
-        run: |
-          source venv/bin/activate
-          pip install -r requirements.txt
-          ./multivac/gather_data.py -t --format influxdb --since 2d
-        working-directory: /mnt/storage/multivac
+        uses: ./.github/actiions/write_to_db
+        with:
+          influx_token: ${{ secrets.INFLUX_TOKEN }}
+          influx_url: ${{ secrets.INFLUX_URL }}
+          since: 2d
 
       - name: Set the chat for failure notification
         if: failure()
