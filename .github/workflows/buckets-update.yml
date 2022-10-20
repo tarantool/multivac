@@ -1,0 +1,94 @@
+name: Update test bucket
+
+on:
+  pull_request:
+    types: [ synchronize ]
+    paths:
+      - '.github/workflows/buckets-*'
+      - '.github/action/write-to-db/action.yml'
+      - 'multivac/gather_data.py'
+      - 'multivac/influxdb.py'
+      - 'multivac/sensors/test_status.py'
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/buckets-*'
+      - '.github/action/write-to-db/action.yml'
+      - 'multivac/gather_data.py'
+      - 'multivac/influxdb.py'
+      - 'multivac/sensors/test_status.py'
+
+jobs:
+  clear-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    strategy:
+      matrix:
+        label: ['tests', 'workflows', 'table']
+    env:
+      INFLUX_TOKEN: ${{ secrets.INFLUX_TOKEN }}
+      INFLUX_ORG: ${{ secrets.INFLUX_ORG }}
+      INFLUX_URL: ${{ secrets.INFLUX_URL }}
+
+    steps:
+      - name: Get deployment name
+        run: |
+          echo 'DEPLOYMENT_NAME<<EOF' >> $GITHUB_ENV
+            echo ${{ github.head_ref }} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Get bucket name (strip username)
+        run: echo 'BUCKET_NAME=${{ env.DEPLOYMENT_NAME }}-${{ matrix.label }}' >> $GITHUB_ENV
+
+      - name: Get start and stop time
+        run: |
+          echo 'START_TIME<<EOF' >> $GITHUB_ENV
+            date -d 'last month' -I >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+          echo 'STOP_TIME<<EOF' >> $GITHUB_ENV
+            date -I >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Clear the data
+        run: |
+          echo ${{ env.BUCKET_NAME }}
+          curl --request POST \
+            "${{ secrets.INFLUX_URL }}/api/v2/delete?org=${{ env.INFLUX_ORG }}&bucket=${{ env.BUCKET_NAME }}" \
+            --header 'Authorization: Token ${{ env.INFLUX_TOKEN }}' \
+            --header 'Content-Type: application/json' \
+            --data '{
+              "start": "${{ env.START_TIME }}T00:00:00Z",
+              "stop": "${{ env.STOP_TIME }}T23:59:00Z"
+            }'
+
+  fill-bucket:
+    runs-on: ['self-hosted', 'multivac-crawler']
+    needs: clear-bucket
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/write_to_db
+        with:
+          influx_token: ${{ secrets.INFLUX_TOKEN }}
+          influx_url: ${{ secrets.INFLUX_URL }}
+
+      - name: start deployment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ github.token }}
+          env: dev-${{ env.DEPLOYMENT_NAME }}
+          ref: ${{ github.head_ref }}
+
+      - name: update deployment status
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          token: ${{ github.token }}
+          env: dev-${{ env.DEPLOYMENT_NAME }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ secrets.DEPLOYMENT_URL }}&var-bucket=${{ env.INFLUX_TEST_BUCKET }}&var-bucket_table=${{ env.INFLUX_TABLE_BUCKET }}

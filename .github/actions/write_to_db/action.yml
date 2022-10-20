@@ -1,0 +1,59 @@
+name: Write data to InfluxDB
+description: Gather workflow and test data with `gather_data.py` and write it to the InfluxDB
+
+inputs:
+  influx_token:
+    required: true
+    description: InfluxDB API token
+  influx_org:
+    required: false
+    default: tarantool
+    description: InfluxDB account organisathion
+  influx_url:
+    required: true
+    description: InfluxDB URL
+  since:
+    required: false
+    default: 30d
+    description: set `--since` option for `gather_data.py`. Format `#d|h`, 
+                  i.e. `30d`, `12h`
+
+runs:
+  using: composite
+  steps:
+    - name: Get bucket base
+      run: |
+        if [[ "${{ github.event_name }}"=="pull_request" ]]; then
+          echo 'DEPLOYMENT_NAME<<EOF' >> $GITHUB_ENV
+            echo '${{ github.head_ref }}' | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+          echo 'BRANCH=${{ github.head_ref }}' >> $GITHUB_ENV
+        else
+          echo 'DEPLOYMENT_NAME=multivac' >> $GITHUB_ENV
+          echo 'BRANCH=master' >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - name: Get bucket names
+      run: |
+        echo ${{ env.DEPLOYMENT_NAME }}
+        echo 'INFLUX_JOB_BUCKET=${{ env.DEPLOYMENT_NAME }}-workflows' >> $GITHUB_ENV
+        echo 'INFLUX_TEST_BUCKET=${{ env.DEPLOYMENT_NAME }}-tests' >> $GITHUB_ENV
+        echo 'INFLUX_TABLE_BUCKET=${{ env.DEPLOYMENT_NAME }}-table' >> $GITHUB_ENV
+      shell: bash
+
+    - name: Write data to InfluxDB
+      env:
+        INFLUX_JOB_BUCKET: ${{ env.INFLUX_JOB_BUCKET }}
+        INFLUX_TEST_BUCKET: ${{ env.INFLUX_TEST_BUCKET }}
+        INFLUX_TABLE_BUCKET: ${{ env.INFLUX_TABLE_BUCKET }}
+        INFLUX_TOKEN: ${{ inputs.influx_token }}
+        INFLUX_ORG: ${{ inputs.influx_org }}
+        INFLUX_URL: ${{ inputs.influx_url }}
+      run: |
+        git checkout ${{ env.BRANCH }}
+        source venv/bin/activate
+        pip install -r requirements.txt
+        ./multivac/gather_data.py -t --format influxdb --since ${{ inputs.since }}
+      working-directory: /mnt/storage/multivac
+      shell: bash
