@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Get bucket name (strip username)
         run: |
-          if '${{ github.event_name }}'=='pull_request'; then
+          if [[ '${{ github.event_name }}'=='pull_request' ]]; then
             echo 'BUCKET_NAME<<EOF' >> $GITHUB_ENV
               echo ${BUCKET_BASE} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
             echo 'EOF' >> $GITHUB_ENV
@@ -74,7 +74,7 @@ jobs:
     steps:
       - name: Get bucket base
         run: |
-          if "${{ github.event_name }}" == "pull_request"; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo 'BUCKET_BASE<<EOF' >> $GITHUB_ENV
               echo '${{ github.head_ref }}' | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
             echo 'EOF' >> $GITHUB_ENV
