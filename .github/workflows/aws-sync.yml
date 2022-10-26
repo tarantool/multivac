@@ -1,4 +1,4 @@
-name: Update test stats
+name: Sync output with s3
 
 on:
   workflow_dispatch:
@@ -9,11 +9,21 @@ jobs:
   deploy:
     runs-on: ['self-hosted', 'multivac-crawler']
     steps:
+      - uses: actions/checkout@v3
       - name: Sync workflow_runs
         run: ./backup.sh workflow_runs
 
       - name: Sync workflow_run_jobs
         run: ./backup.sh workflow_run_jobs
+
+      - name: Set the chat for failure notification
+        if: failure()
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/master' ]]; then
+              echo "CHAT_ID=${{ secrets.MYTEAM_SERVICE_CHAT_ID }}" >> "$GITHUB_ENV"
+          else
+              echo "CHAT_ID=${{ secrets.MYTEAM_DEBUG_CHAT_ID }}" >> "$GITHUB_ENV"
+          fi
 
       - name: Send notification
         if: failure()
