@@ -14,6 +14,7 @@ workflow_run_jobs
 # Python bytecode.
 *.pyc
 __pycache__
+venv
 
 # IDEA
 .idea
