@@ -422,7 +422,7 @@ class GatherData:
                     'branch': job_info['branch'],
                     'architecture': job_info['platform'],
                     'gc64': job_info['gc64'],
-                    'os_version': job_info['runner_label'][0],
+                    'os_version': job_info['os_version'],
                     'job_link': job_info['html_url'].lstrip('https://'),
                     'commit_link': f"{base_url}/commit/{job_info['commit_sha']}",
                     'job_json': f"{s3_url}/workflow_run_jobs/{job_id}.json",

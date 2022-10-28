@@ -51,6 +51,11 @@ runs:
         INFLUX_ORG: ${{ inputs.influx_org }}
         INFLUX_URL: ${{ inputs.influx_url }}
       run: |
+        git checkout master
+        if [[ ${{ env.BRANCH }} != master ]]; then
+          git branch -D ${{ env.BRANCH }}
+        fi
+        git fetch
         git checkout ${{ env.BRANCH }}
         source venv/bin/activate
         pip install -r requirements.txt
