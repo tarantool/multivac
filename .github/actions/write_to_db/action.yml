@@ -51,7 +51,9 @@ runs:
         INFLUX_ORG: ${{ inputs.influx_org }}
         INFLUX_URL: ${{ inputs.influx_url }}
       run: |
+        git fetch --prune
         git checkout ${{ env.BRANCH }}
+        git reset --hard origin/${{ env.BRANCH }}
         source venv/bin/activate
         pip install -r requirements.txt
         ./multivac/gather_data.py -t --format influxdb --since ${{ inputs.since }}

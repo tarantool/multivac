@@ -55,7 +55,10 @@ jobs:
 
       - name: Save bucket ID
         run: |
-          if [[ ${{ env.ARTIFACT_NAME != null }} ]]; then
+          # bucket ID can't be less than 16 bytes
+          id=${{ env.ARTIFACT_NAME }}
+          len_id=${#id}
+          if [ ${len_id} -gt 15 ]; then
             echo ${{ env.ARTIFACT_NAME }} > ${{ env.BUCKET_NAME }}-id
           else
             exit 1
