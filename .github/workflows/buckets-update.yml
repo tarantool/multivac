@@ -1,4 +1,4 @@
-name: Update test bucket
+name: Update buckets
 
 on:
   pull_request:
@@ -11,8 +11,6 @@ on:
       - 'multivac/sensors/test_status.py'
   workflow_dispatch:
   push:
-    branches:
-      - 'master'
     paths:
       - '.github/workflows/buckets-*'
       - '.github/action/write-to-db/action.yml'
