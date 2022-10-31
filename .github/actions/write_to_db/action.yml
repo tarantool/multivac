@@ -23,7 +23,7 @@ runs:
   steps:
     - name: Get bucket base
       run: |
-        if [[ "${{ github.event_name }}"=="pull_request" ]]; then
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           echo 'DEPLOYMENT_NAME<<EOF' >> $GITHUB_ENV
             echo '${{ github.head_ref }}' | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
