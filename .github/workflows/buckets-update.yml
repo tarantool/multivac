@@ -11,6 +11,8 @@ on:
       - 'multivac/sensors/test_status.py'
   workflow_dispatch:
   push:
+    branches:
+      - 'master'
     paths:
       - '.github/workflows/buckets-*'
       - '.github/action/write-to-db/action.yml'
