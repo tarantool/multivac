@@ -16,9 +16,6 @@ from influxdb import influx_connector
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
 
-version_matcher = re.compile(r"Current runner version: "
-                             r"'(\d*.\d*.\d*)'")
-
 
 # As far as the failure occurs at the end of the log, let's
 # start to parse the file from the end to speed up the process
@@ -174,6 +171,24 @@ class GatherData:
             return f'freebsd_{freebsd_version}'
         return 'ubuntu_22_04'
 
+    @staticmethod
+    def get_runner_version(log_file):
+        version_matcher = re.compile(r"Current runner version: "
+                                     r"'(\d*.\d*.\d*)'")
+        freebsd_version_matcher = re.compile(r"Runner Version: "
+                                             r"(\d*.\d*.\S*)")
+        for line in log_file:
+            match = version_matcher.search(line)
+            if match:
+                runner_version = match.group(1)
+                return runner_version
+            else:
+                freebsd_match = freebsd_version_matcher.search(line)
+                if freebsd_match:
+                    runner_version = freebsd_match.group(1)
+                    return runner_version
+        return "unknown_runner_version"
+
     def gather_data(self):
         job_json_files = sorted(glob.glob(
             os.path.join(self.workflow_run_jobs_dir, '*[0-9].json')),
@@ -227,19 +242,14 @@ class GatherData:
             # Load info about jobs and tests from .log, if there are logs
             logs = f'{self.workflow_run_jobs_dir}/{job_id}.log'
             job_failure_type = None
-            runner_version = None
             try:
                 with open(logs, 'r') as log_file:
                     log_file_as_list = list(log_file)
+
                     time_queued = log_file_as_list[0][0:19] + 'Z'
                     test_data = self.get_test_data(log_file_as_list)
                     debug = self.get_release_or_debug(log_file_as_list)
-                    for string in range(len(log_file_as_list[:10])):
-                        line = log_file_as_list[string]
-                        match = version_matcher.search(line)
-                        if match:
-                            runner_version = match.group(1)
-                            break
+                    runner_version = self.get_runner_version(log_file_as_list)
             except FileNotFoundError:
                 print(f'no logs for job {job_id}')
 
@@ -279,20 +289,11 @@ class GatherData:
                 'gc64': gc64,
                 'debug': debug,
                 'html_url': job['html_url'],
+                'runner_name': job['runner_name'] or "unknown",
+                'runner_version': runner_version or "unknown",
+                'failure_type': job_failure_type or "not_failed"
             }
 
-            if job['runner_name']:
-                gathered_job_data.update(
-                    {'runner_name': job['runner_name']}
-                )
-            if runner_version:
-                gathered_job_data.update(
-                    {'runner_version': runner_version}
-                )
-            if job_failure_type:
-                gathered_job_data.update(
-                    {'failure_type': job_failure_type}
-                )
             if test_data:
                 gathered_job_data.update(
                     {'failed_tests': test_data}
@@ -322,12 +323,9 @@ class GatherData:
                 'runner_label': curr_job['runner_label'],
                 'conclusion': curr_job['conclusion'],
                 'gc64': curr_job['gc64'],
+                'runner_version': curr_job['runner_version'],
+                'runner_name': curr_job['runner_name']
             }
-            if 'runner_version' in curr_job.keys():
-                tags['runner_version'] = curr_job['runner_version']
-
-            if 'runner_name' in curr_job.keys():
-                tags['runner_name'] = curr_job['runner_name']
 
             fields = {
                 'value': 1
