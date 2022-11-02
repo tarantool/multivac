@@ -1,6 +1,9 @@
 name: Sync output with s3
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/aws-sync.yml'
   workflow_dispatch:
   schedule:
     - cron: 30 20 * * *
