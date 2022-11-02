@@ -33,6 +33,12 @@ HANG_RESULT_RE = re.compile(
     TIMESTAMP_RE + SEP_RE +
     r'--- ' + RESULT_RE + r'\b')
 
+COLOR_RE = re.compile('\033' + r'\[\d(?:;\d\d)?m')
+
+
+def decolor(data):
+    return COLOR_RE.sub('', data)
+
 
 def get_cache_filepath(log_filepath):
     return '{}.test_status.cache.json'.format(log_filepath)
@@ -58,7 +64,8 @@ def test_status_iter(log_fh, cache_filepath=None):
         cache = []
 
     hang_detected = False
-    for line in log_fh:
+    for unprocessed_line in log_fh:
+        line = decolor(unprocessed_line)
         m = TEST_STATUS_LINE_RE.match(line)
         if m:
             status = m.group('status') or 'fail'

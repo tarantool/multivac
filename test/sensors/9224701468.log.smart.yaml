@@ -1,0 +1,5 @@
+- [app-luatest/tnt_debug_getsources_test.lua, null, pass]
+- [app-luatest/gh_6817_console_memory_leak_test.l>, null, pass]
+- [app-luatest/gh_5747_crash_multiple_args_test.l>, null, pass]
+- [app-luatest/gh_7489_concurrent_fiber_join_test>, null, pass]
+- [app-luatest/interval_test.lua, null, pass]
