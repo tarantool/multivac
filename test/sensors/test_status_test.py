@@ -69,6 +69,15 @@ class TestStatus(unittest.TestCase):
     def test_smart_status_hang(self):
         self.check_test_smart_status_iter('3828337083.log')
 
+    # 92247014678.log has special coloring characters:
+    # ql-tap/join3.test.lua <...> [0m[0;32m[ pass ][0m
+
+    def test_status_colored(self):
+        self.check_test_status_iter('9224701468.log')
+
+    def test_smart_status_colored(self):
+        self.check_test_smart_status_iter('9224701468.log')
+
 
 if __name__ == '__main__':
     unittest.main()
