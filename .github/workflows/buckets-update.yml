@@ -34,9 +34,13 @@ jobs:
     steps:
       - name: Get deployment name
         run: |
-          echo 'DEPLOYMENT_NAME<<EOF' >> $GITHUB_ENV
-            echo ${{ github.head_ref }} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo 'DEPLOYMENT_NAME<<EOF' >> $GITHUB_ENV
+              echo ${{ github.head_ref }} | sed -r 's/^.*\/(.*)/\1/' >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+          else
+            echo 'DEPLOYMENT_NAME=multivac' >> $GITHUB_ENV
+          fi
 
       - name: Get bucket name (strip username)
         run: echo 'BUCKET_NAME=${{ env.DEPLOYMENT_NAME }}-${{ matrix.label }}' >> $GITHUB_ENV
