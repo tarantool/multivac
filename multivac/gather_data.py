@@ -16,6 +16,37 @@ from influxdb import influx_connector
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
 
+COLOR_RE = re.compile('\033' + r'\[\d(?:;\d\d)?m')
+COMPILER_RE = re.compile(r'C compiler identification is '
+                         r'(\S* \d*.\d*.\d*)')
+
+# According to distrowatch.com and repology.org/project/glibc/versions
+LIBC_VERSIONS = {
+    'centos_7': '2.17',
+    'centos_8': '2.28',
+    'debian_9': '2.24',
+    'debian_10': '2.28',
+    'debian_11': '2.31',
+    'fedora_34': '2.33',
+    'fedora_35': '2.34',
+    'fedora_36': '2.35',
+    'freebsd_12': 'freebsd_12',
+    'freebsd_13': 'freebsd_13',
+    'opensuse_15_1': '2.26',
+    'opensuse_15_2': '2.26',
+    'osx_11': 'osx_11',
+    'osx_12': 'osx_12',
+    'redos_7_3': '2.28',
+    'ubuntu_16_04': '2.24',
+    'ubuntu_18_04': '2.27',
+    'ubuntu_20_04': '2.31',
+    'ubuntu_22_04': '2.35'
+}
+
+
+def decolor(data):
+    return COLOR_RE.sub('', data)
+
 
 # As far as the failure occurs at the end of the log, let's
 # start to parse the file from the end to speed up the process
@@ -189,6 +220,15 @@ class GatherData:
                     return runner_version
         return "unknown_runner_version"
 
+    @staticmethod
+    def get_compiler_version(log_file):
+        compiler = 'undefined_compiler'
+        for line in log_file:
+            compiler_match = COMPILER_RE.search(line)
+            if compiler_match:
+                compiler = compiler_match.group(1)
+        return compiler
+
     def gather_data(self):
         job_json_files = sorted(glob.glob(
             os.path.join(self.workflow_run_jobs_dir, '*[0-9].json')),
@@ -244,12 +284,13 @@ class GatherData:
             job_failure_type = None
             try:
                 with open(logs, 'r') as log_file:
-                    log_file_as_list = list(log_file)
+                    log_file_as_list = list(map(decolor, log_file))
 
                     time_queued = log_file_as_list[0][0:19] + 'Z'
                     test_data = self.get_test_data(log_file_as_list)
                     debug = self.get_release_or_debug(log_file_as_list)
                     runner_version = self.get_runner_version(log_file_as_list)
+                    compiler = self.get_compiler_version(log_file_as_list)
             except FileNotFoundError:
                 print(f'no logs for job {job_id}')
 
@@ -291,7 +332,9 @@ class GatherData:
                 'html_url': job['html_url'],
                 'runner_name': job['runner_name'] or "unknown",
                 'runner_version': runner_version or "unknown",
-                'failure_type': job_failure_type or "not_failed"
+                'failure_type': job_failure_type or "not_failed",
+                'compiler_version': compiler,
+                'libc_version': LIBC_VERSIONS[os_version] or 'failed_to_detect'
             }
 
             if test_data:
@@ -373,6 +416,8 @@ class GatherData:
                     'architecture': job_info['platform'],
                     'gc64': job_info['gc64'],
                     'os_version': job_info['os_version'],
+                    'compiler_version': job_info['compiler_version'],
+                    'libc_version': job_info['libc_version']
                 }
                 time = github_time_to_unix(
                     self.gathered_data[job_id]['started_at'])
