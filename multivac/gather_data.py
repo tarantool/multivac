@@ -40,7 +40,8 @@ LIBC_VERSIONS = {
     'ubuntu_16_04': '2.24',
     'ubuntu_18_04': '2.27',
     'ubuntu_20_04': '2.31',
-    'ubuntu_22_04': '2.35'
+    'ubuntu_22_04': '2.35',
+    'unknown': 'unknown',
 }
 
 
@@ -103,6 +104,16 @@ def github_time_to_unix(time: str) -> float:
         f"{time.rstrip('Z')}+00:00")
     time_to_unix = datetime.timestamp(time_to_datetime)
     return time_to_unix
+
+
+# https://github.com/tarantool/tarantool/tree/master/.github/workflows
+OS_MATCHER = re.compile(r"[a-z]+_[0-9]+(_[0-9]+)?")
+FREEBSD_MATCHER = re.compile(r"freebsd-[0-9]{2}")
+# Jobs running right on the runner, not in a container
+DEFAULT_RUNNERS_MATCHER = re.compile(
+    r"(release|debug|static|conver|cover|"
+    r"default_gcc|memtx|integration|out_of_source).*")
+DEFAULT_RUNNER_OS = 'ubuntu_20_04'
 
 
 class GatherData:
@@ -191,16 +202,17 @@ class GatherData:
 
     @staticmethod
     def detect_os_version(job_name):
-        os_matcher = re.compile(r"[a-z]+_[0-9]+(_[0-9]+)?")
-        freebsd_matcher = re.compile(r"freebsd-[0-9]{2}")
-        os_match = os_matcher.search(job_name)
-        freebsd_match = freebsd_matcher.search(job_name)
+
+        os_match = OS_MATCHER.search(job_name)
         if os_match:
             return os_match.group()
-        elif freebsd_match:
+        freebsd_match = FREEBSD_MATCHER.search(job_name)
+        if freebsd_match:
             freebsd_version = freebsd_match.group().split('-')[1]
             return f'freebsd_{freebsd_version}'
-        return 'ubuntu_22_04'
+        if DEFAULT_RUNNERS_MATCHER.match(job_name):
+            return DEFAULT_RUNNER_OS
+        return 'unknown'
 
     @staticmethod
     def get_runner_version(log_file):
