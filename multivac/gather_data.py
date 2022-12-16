@@ -114,6 +114,7 @@ DEFAULT_RUNNERS_MATCHER = re.compile(
     r"(release|debug|static|conver|cover|"
     r"default_gcc|memtx|integration|out_of_source).*")
 DEFAULT_RUNNER_OS = 'ubuntu_20_04'
+NUM_MATCHER = re.compile(r".*/(\d*)\.json")
 
 
 class GatherData:
@@ -242,9 +243,13 @@ class GatherData:
         return compiler
 
     def gather_data(self):
-        job_json_files = sorted(glob.glob(
-            os.path.join(self.workflow_run_jobs_dir, '*[0-9].json')),
-            reverse=True)
+        # workflow_run_jobs/*[0-9].json
+        workflow_files = glob.glob(os.path.join(self.workflow_run_jobs_dir, '*[0-9].json'))
+
+        def sorter(filename):
+            return int(NUM_MATCHER.search(filename).group(1))
+
+        job_json_files = sorted(workflow_files, reverse=True, key=sorter)
         if self.latest_n:
             job_json_files = job_json_files[:self.latest_n]
 
