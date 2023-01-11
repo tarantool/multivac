@@ -10,11 +10,11 @@ import argparse
 import importlib.resources as pkg_resources
 
 # secret.LOG_STORAGE_BUCKET_URL
-bucket_url = os.environ.get('LOG_STORAGE_BUCKET_URL').strip("'")
-if not bucket_url:
+bucket_url_unstripped = os.environ.get('LOG_STORAGE_BUCKET_URL')
+if not bucket_url_unstripped:
     print('LOG_STORAGE_BUCKET_URL not set')
     exit(1)
-org_repo = 'tarantool/tarantool'
+bucket_url = bucket_url_unstripped.strip("'")
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_DIR)
@@ -30,13 +30,16 @@ parser.add_argument('--format', choices=['csv', 'html'], default='csv',
                     help='result format')
 parser.add_argument('--short', action='store_true',
                     help="Coalesce 'runs-on' labels by a first word")
+parser.add_argument('--repo-path', type=str, default='tarantool/tarantool',
+                    help='owner/repository')
 args = parser.parse_args()
 branch_list = args.branch
 result_format = args.format
 
 output_dir = 'output'
-workflow_runs_dir = 'workflow_runs'
-workflow_run_jobs_dir = 'workflow_run_jobs'
+workflow_runs_dir = f'{args.repo_path}/workflow_runs'
+workflow_run_jobs_dir = f'{args.repo_path}/workflow_run_jobs'
+org_repo = args.repo_path
 
 
 def fails(log):

@@ -20,8 +20,8 @@ SYNOPSIS
 DESCRIPTION
 
     multivac/fetch.py — download workflow runs GitHub API, workflow run jobs
-    GitHub API and logs. Result stored in `workflow_runs` and `workflow_run_jobs`
-    directories in the root of the project.
+    GitHub API and logs. Result stored in `<owner>/<repo>/workflow_runs` and 
+    `<owner>/<repo>/workflow_run_jobs` directories in the root of the project.
 
 
 OPTIONS
@@ -64,7 +64,8 @@ DESCRIPTION
    
     multivac/last_seen.py - generate common report from data collected by 
     `multivac/fetch.py` and store it in `output` directory. By default, it
-    generates a report in CSV format.
+    generates a report in CSV format. To start locally, set some value as
+    'LOG_STORAGE_BUCKET_URL' - uses as a value in result file.
 
 OPTIONS
 
@@ -80,13 +81,20 @@ OPTIONS
 
             Coalesce 'runs-on' labels by a first word
 
+    --repo-path
+    
+            owner/repository
+            Uses in `fetch.py` result files path, so `last_seen.py` needs it to
+            find data for certain repo. Default: 'tarantool/tarantool'. You can
+            set only one repo in one sckript start.
+
 EXAMPLE
 
     Generate a report in the HTML format for branches `master` and
-    `sample-branch`:
+    `sample-branch` for repo 'tarantool/multivac':
 
 ```console
-$ ./multivac/last_seen.py --branch master --branch sample-branch --format html
+$ ./multivac/last_seen.py --branch master --branch sample-branch --format html --repo-path tarantool/multivac
 ```
 
 ### gather_data.py
@@ -130,13 +138,21 @@ OPTIONS
             Only take logs for jobs started N days or hours ago: Nd for N days
             and Nh for N hours.
 
+    --repo-path
+    
+            repository (without owner)
+            Uses in `fetch.py` result files path, so `gather_data.py` needs it
+            to find data for certain repo. Default: 'tarantool/tarantool'.
+            You can set only one repo in one sckript start.
+
 EXAMPLE
     
-    Collect data about jobs and tests started a week ago or later, and put
-    this data to InfluxDB:
+    Collect data about jobs and tests started a week ago or later in repo 
+    'tarantool/multivac' (so the fetched JSON and log files stored in the path
+    ./tarantool/multivc), and put this data to InfluxDB:
 
 ```console
-$ ./multivac/gather_data.py -t --since 7d --format influxdb
+$ ./multivac/gather_data.py -t --since 7d --format influxdb --repo-path tarantool/multivac
 ```
 
 ### gather_test_data.py

@@ -119,8 +119,9 @@ NUM_MATCHER = re.compile(r".*/(\d*)\.json")
 
 class GatherData:
     def __init__(self, cli_args):
-        self.workflow_run_jobs_dir = 'workflow_run_jobs'
-        self.workflow_runs_dir = 'workflow_runs'
+        self.repo_path = cli_args.repo_path
+        self.workflow_run_jobs_dir = f'{self.repo_path}/workflow_run_jobs'
+        self.workflow_runs_dir = f'{self.repo_path}/workflow_runs'
         self.output_dir = 'output'
         self.gathered_data = dict()
         self.latest_n: int = cli_args.latest
@@ -244,7 +245,8 @@ class GatherData:
 
     def gather_data(self):
         # workflow_run_jobs/*[0-9].json
-        workflow_files = glob.glob(os.path.join(self.workflow_run_jobs_dir, '*[0-9].json'))
+        workflow_files = glob.glob(
+            os.path.join(self.workflow_run_jobs_dir, '*[0-9].json'))
 
         def sorter(filename):
             return int(NUM_MATCHER.search(filename).group(1))
@@ -351,7 +353,7 @@ class GatherData:
                 'runner_version': runner_version or "unknown",
                 'failure_type': job_failure_type or "not_failed",
                 'compiler_version': compiler,
-                'libc_version': LIBC_VERSIONS[os_version] or 'failed_to_detect'
+                'libc_version': LIBC_VERSIONS[os_version] or 'failed_to_detect',
             }
 
             if test_data:
@@ -384,7 +386,8 @@ class GatherData:
                 'conclusion': curr_job['conclusion'],
                 'gc64': curr_job['gc64'],
                 'runner_version': curr_job['runner_version'],
-                'runner_name': curr_job['runner_name']
+                'runner_name': curr_job['runner_name'],
+                'repository': self.repo_path,
             }
 
             fields = {
@@ -434,7 +437,8 @@ class GatherData:
                     'gc64': job_info['gc64'],
                     'os_version': job_info['os_version'],
                     'compiler_version': job_info['compiler_version'],
-                    'libc_version': job_info['libc_version']
+                    'libc_version': job_info['libc_version'],
+                    'repository': self.repo_path,
                 }
                 time = github_time_to_unix(
                     self.gathered_data[job_id]['started_at'])
@@ -462,8 +466,8 @@ class GatherData:
         influx_test_bucket = os.environ['INFLUX_TABLE_BUCKET']
         influx_org = os.environ['INFLUX_ORG']
         data_list = []
-        base_url = 'github.com/tarantool/tarantool'
-        s3_url = 'multivac.hb.bizmrg.com/tarantool/tarantool'
+        base_url = f'github.com/{self.repo_path}'
+        s3_url = f'multivac.hb.bizmrg.com/{self.repo_path}'
         print('Writing data for tests table to InfluxDB...')
         for job_id in filter(
                 lambda x: 'failed_tests' in list(self.gathered_data[x].keys()),
@@ -483,6 +487,7 @@ class GatherData:
                     'architecture': job_info['platform'],
                     'gc64': job_info['gc64'],
                     'os_version': job_info['os_version'],
+                    'repository': self.repo_path,
                     'job_link': job_info['html_url'].lstrip('https://'),
                     'commit_link': f"{base_url}/commit/{job_info['commit_sha']}",
                     'job_json': f"{s3_url}/workflow_run_jobs/{job_id}.json",
@@ -579,6 +584,8 @@ if __name__ == '__main__':
              'the last two days, skip the rest. \'--since 5h \' is option to '
              'process only the last 5 hours.'
     )
+    parser.add_argument('--repo-path', type=str, default='tarantool/tarantool',
+                        help='repository (without owner)')
     parser.add_argument('--tests', '-t', action='store_true')
 
     args = parser.parse_args()
