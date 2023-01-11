@@ -41,8 +41,8 @@ session.headers.update({
     'Authorization': 'token ' + token,
 })
 debug_log_fh = open('debug.log', 'a')
-workflow_runs_dir = 'workflow_runs'
-workflow_run_jobs_dir = 'workflow_run_jobs'
+workflow_runs_dir = f'{args.repo_path}/workflow_runs'
+workflow_run_jobs_dir = f'{args.repo_path}/workflow_run_jobs'
 
 
 def retry(http_get_function):
