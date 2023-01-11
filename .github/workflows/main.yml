@@ -7,6 +7,9 @@ on:
 
 jobs:
   deploy:
+    strategy:
+      matrix:
+        repo: [ 'tarantool/tarantool', 'tarantool/tarantool-ee' ]
     runs-on: ['self-hosted', 'multivac-crawler']
     env:
       LOG_STORAGE_BUCKET_URL: ${{ secrets.LOG_STORAGE_BUCKET_URL }}
@@ -16,11 +19,11 @@ jobs:
         working-directory: /mnt/storage/multivac
 
       - name: fetch.py for master
-        run: ./multivac/fetch.py --branch master tarantool/tarantool
+        run: ./multivac/fetch.py --branch master ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
       - name: fetch.py for 2.10
-        run: ./multivac/fetch.py --branch 2.10 tarantool/tarantool
+        run: ./multivac/fetch.py --branch 2.10 ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
       - name: fetch.py for 1.10
