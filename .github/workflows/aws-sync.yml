@@ -10,14 +10,15 @@ on:
 
 jobs:
   deploy:
+    strategy:
+      matrix:
+        repo: [ 'tarantool/tarantool', 'tarantool/tarantool-ee' ]
+        dir: [ 'artifacts', 'workflow_runs', 'workflow_run_jobs' ]
     runs-on: ['self-hosted', 'multivac-crawler']
     steps:
       - uses: actions/checkout@v3
-      - name: Sync workflow_runs
-        run: ./backup.sh workflow_runs
-
-      - name: Sync workflow_run_jobs
-        run: ./backup.sh workflow_run_jobs
+      - name: Sync fetched data
+        run: ./backup.sh ${{ matrix.repo }}/${{ matrix.dir }}
 
       - name: Set the chat for failure notification
         if: failure()
