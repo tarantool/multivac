@@ -34,7 +34,7 @@ jobs:
         uses: dasshit/myteam-notify@master
         with:
           api-url: ${{ secrets.MYTEAM_BOT_API }}
-          bot-token: ${{ secrets.MYTEAM_BOT_TOKEN }}
+          bot-token: ${{ secrets.VKTEAMS_TARANTOOLBOT_TOKEN }}
           chat-id: ${{ env.CHAT_ID }}
           msg-text: "multivac s3 sync failure:
                     https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
