@@ -22,6 +22,7 @@ COMPILER_RE = re.compile(r'C compiler identification is '
 
 # According to distrowatch.com and repology.org/project/glibc/versions
 LIBC_VERSIONS = {
+    'apline_3_16': 'musl',
     'centos_7': '2.17',
     'centos_8': '2.28',
     'debian_9': '2.24',
@@ -353,7 +354,7 @@ class GatherData:
                 'runner_version': runner_version or "unknown",
                 'failure_type': job_failure_type or "not_failed",
                 'compiler_version': compiler,
-                'libc_version': LIBC_VERSIONS[os_version] or 'failed_to_detect',
+                'libc_version': LIBC_VERSIONS.get(os_version) or 'failed_to_detect',
             }
 
             if test_data:
