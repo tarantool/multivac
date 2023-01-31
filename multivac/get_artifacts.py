@@ -147,6 +147,11 @@ if __name__ == '__main__':
     for run_file in workflow_run_files:
         artifact_api_url, run_id = get_workflow_run_artifact_base_data(run_file)
 
+        # If the directory exists, we've already downloaded
+        # artifacts for this run
+        if os.path.exists(f'{artifacts_dir}/{run_id}'):
+            continue
+
         if not artifact_api_url:
             continue
 
