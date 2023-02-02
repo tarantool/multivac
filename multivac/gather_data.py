@@ -488,6 +488,8 @@ class GatherData:
                     'architecture': job_info['platform'],
                     'gc64': job_info['gc64'],
                     'os_version': job_info['os_version'],
+                    'compiler_version': job_info['compiler_version'],
+                    'libc_version': job_info['libc_version'],
                     'repository': self.repo_path,
                     'job_link': job_info['html_url'].lstrip('https://'),
                     'commit_link': f"{base_url}/commit/{job_info['commit_sha']}",
