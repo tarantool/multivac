@@ -12,7 +12,7 @@ jobs:
   deploy:
     strategy:
       matrix:
-        repo: [ 'tarantool/tarantool', 'tarantool/tarantool-ee' ]
+        repo: [ 'tarantool/tarantool' ]
         dir: [ 'artifacts', 'workflow_runs', 'workflow_run_jobs' ]
     runs-on: ['self-hosted', 'multivac-crawler']
     steps:
