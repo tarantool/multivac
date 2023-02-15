@@ -9,7 +9,7 @@ jobs:
   deploy:
     strategy:
       matrix:
-        repo: [ 'tarantool/tarantool', 'tarantool/tarantool-ee' ]
+        repo: [ 'tarantool/tarantool']
     runs-on: ['self-hosted', 'multivac-crawler']
     env:
       LOG_STORAGE_BUCKET_URL: ${{ secrets.LOG_STORAGE_BUCKET_URL }}
