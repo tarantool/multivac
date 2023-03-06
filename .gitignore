@@ -3,6 +3,7 @@
 
 # Secret token for GitHub
 token.txt
+token_artifacts.txt
 
 # Secret environment variables
 .env
