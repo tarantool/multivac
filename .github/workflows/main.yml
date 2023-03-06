@@ -31,7 +31,7 @@ jobs:
         working-directory: /mnt/storage/multivac
 
       - name: get_artifacts.py
-        run: ./multivac/get_artifacts.py --repo-path ${{ matrix.repo }}
+        run: ./multivac/get_artifacts.py --repo-path ${{ matrix.repo }} --token-path ${{ secrets.TOKEN }}
         working-directory: /mnt/storage/multivac
 
       - name: make csv
