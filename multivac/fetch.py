@@ -91,19 +91,21 @@ def http_get(url, params=None):
 
     debug('Response HTTP status: {}', r.status_code)
     debug('Response headers:\n{}', json.dumps(dict(r.headers), indent=2))
-    content_type = r.headers['content-type']
-    if 'content-type'.startswith('application/json'):
-        response_text = json.dumps(r.json(), indent=2)
-    elif content_type == 'application/zip' or \
-            content_type.startswith('text/plain'):
-        fmt = '[Don\'t log {} response.]'
-        response_text = fmt.format(content_type)
+    content_type = r.headers.get('content-type')
+    if content_type:
+        if content_type.startswith('application/json'):
+            response_text = json.dumps(r.json(), indent=2)
+        elif content_type == 'application/zip' or content_type.startswith('text/plain'):
+            fmt = '[Don\'t log {} response.]'
+            response_text = fmt.format(content_type)
+        else:
+            fmt = '[Don\'t log response with unknown Content-Type: {}]'
+            response_text = fmt.format(content_type)
+        r.raise_for_status()
     else:
-        fmt = '[Don\'t log response with unknown Content-Type: {}]'
-        response_text = fmt.format(content_type)
-    debug('Response:\n{}', response_text)
+        response_text = '[EMPTY LOG!]'
 
-    r.raise_for_status()
+    debug('Response:\n{}', response_text)
 
     return r
 
