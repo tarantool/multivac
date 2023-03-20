@@ -289,34 +289,41 @@ class GatherData:
 
             # Load info about jobs and tests from .log, if there are logs
             logs = f'{self.workflow_run_jobs_dir}/{job_id}.log'
-            job_failure_type = None
+
+            time_queued = job.get('created_at', job['started_at'])
+            test_data = []
+            debug = 'unknown'
+            runner_version = 'unknown'
+            compiler = 'unknown'
+            job_failure_type = 'unknown'
+
             try:
                 with open(logs, 'r') as log_file:
                     log_file_as_list = list(map(decolor, log_file))
-
-                    time_queued = log_file_as_list[0][0:19] + 'Z'
-                    test_data = self.get_test_data(log_file_as_list)
-                    debug = self.get_release_or_debug(log_file_as_list)
-                    runner_version = self.get_runner_version(log_file_as_list)
-                    compiler = self.get_compiler_version(log_file_as_list)
             except FileNotFoundError:
-                print(f'no logs for job {job_id}')
+                print(f'No logs for job {job_id}, {job["html_url"]}')
+            else:
+                time_queued = log_file_as_list[0][0:19] + 'Z'
+                test_data = self.get_test_data(log_file_as_list)
+                debug = self.get_release_or_debug(log_file_as_list)
+                runner_version = self.get_runner_version(log_file_as_list)
+                compiler = self.get_compiler_version(log_file_as_list)
 
-            if job['conclusion'] == 'failure':
-                # Detect failure type, collect total failures of certain type
-                job_failure_type, failure_line = detect_error(logs,
-                                                              specific_failures)
-                if job_failure_type == 'unknown_failure':
+                if job['conclusion'] == 'failure':
+                    # Detect failure type, collect total failures of certain type
                     job_failure_type, failure_line = detect_error(logs,
-                                                                  generic_failures)
-                if job_failure_type == self.watch_failure:
-                    print(
-                        f'{job_id}  {job["name"]}\t'
-                        f' https://github.com/tarantool/tarantool/runs/'
-                        f'{job_id}?check_suite_focus=true\n'
-                        f'\t\t\t{failure_line}')
-                results[job_failure_type] += 1
-                results['total'] += 1
+                                                                  specific_failures)
+                    if job_failure_type == 'unknown_failure':
+                        job_failure_type, failure_line = detect_error(logs,
+                                                                      generic_failures)
+                    if job_failure_type == self.watch_failure:
+                        print(
+                            f'{job_id}  {job["name"]}\t'
+                            f' https://github.com/tarantool/tarantool/runs/'
+                            f'{job_id}?check_suite_focus=true\n'
+                            f'\t\t\t{failure_line}')
+                    results[job_failure_type] += 1
+                    results['total'] += 1
 
             # Get OS name and version
             os_version = self.detect_os_version(job['name'])
@@ -338,11 +345,11 @@ class GatherData:
                 'gc64': gc64,
                 'debug': debug,
                 'html_url': job['html_url'],
-                'runner_name': job['runner_name'] or "unknown",
-                'runner_version': runner_version or "unknown",
-                'failure_type': job_failure_type or "not_failed",
+                'runner_name': job['runner_name'],
+                'runner_version': runner_version,
+                'failure_type': job_failure_type,
                 'compiler_version': compiler,
-                'libc_version': LIBC_VERSIONS.get(os_version) or 'failed_to_detect',
+                'libc_version': LIBC_VERSIONS.get(os_version, 'unknown'),
             }
 
             if test_data:
