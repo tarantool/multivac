@@ -51,7 +51,7 @@ jobs:
             --header "Content-type: application/json"
 
       - name: Remove GitHub deployment at branch-${{ env.DEPLOYMENT_NAME }}
-        uses: bobheadxi/deployments@v1
+        uses: bobheadxi/deployments@v1.3.0
         with:
           step: delete-env
           token: ${{ secrets.GITHUB_TOKEN }}
