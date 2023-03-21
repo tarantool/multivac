@@ -31,7 +31,8 @@ jobs:
       - name: Get bucket name (strip username)
         run: echo 'BUCKET_NAME=${{ env.DEPLOYMENT_NAME }}-${{ matrix.label }}' >> $GITHUB_ENV
 
-      - uses: dawidd6/action-download-artifact@v2
+      # This action doesn't work for us since version 2.26.0
+      - uses: dawidd6/action-download-artifact@v2.25.0
         with:
           workflow: buckets-create.yml
           branch: ${{ github.head_ref }}
