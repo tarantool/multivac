@@ -30,10 +30,6 @@ jobs:
         run: ./multivac/fetch.py --branch 1.10 tarantool/tarantool
         working-directory: /mnt/storage/multivac
 
-      - name: get_artifacts.py
-        run: ./multivac/get_artifacts.py --repo-path ${{ matrix.repo }} --token-path ${{ secrets.TOKEN }}
-        working-directory: /mnt/storage/multivac
-
       - name: make csv
         run: ./multivac/last_seen.py --branch master --branch 1.10 --branch 2.10
         working-directory: /mnt/storage/multivac
