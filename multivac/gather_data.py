@@ -287,18 +287,6 @@ class GatherData:
             else:
                 gc64 = 'False'
 
-            # Take data from GitHub Workflow runs API
-            run_file_path = f"{self.workflow_runs_dir}/{job['run_id']}.json"
-            try:
-                with open(run_file_path) as run_file:
-                    run = json.load(run_file)
-                    branch = run['head_branch']
-            except FileNotFoundError:
-                print(f"Job {job_id}: no runs found, can't open "
-                      f"{run_file_path}")
-            except ValueError:
-                print(f"Job {job_id}: can't decode JSON in {run_file_path}")
-
             # Load info about jobs and tests from .log, if there are logs
             logs = f'{self.workflow_run_jobs_dir}/{job_id}.log'
             job_failure_type = None
@@ -339,7 +327,7 @@ class GatherData:
                 'workflow_run_id': job['run_id'],
                 'job_name': job['name'],
                 'os_version': os_version,
-                'branch': branch,
+                'branch': job['head_branch'],
                 'commit_sha': job['head_sha'],
                 'conclusion': job['conclusion'],
                 'queued_at': time_queued,
