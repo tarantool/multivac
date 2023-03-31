@@ -22,16 +22,16 @@ jobs:
         run: ./multivac/fetch.py --branch master ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
+      - name: fetch.py for 2.11
+        run: ./multivac/fetch.py --branch 2.11 ${{ matrix.repo }}
+        working-directory: /mnt/storage/multivac
+
       - name: fetch.py for 2.10
         run: ./multivac/fetch.py --branch 2.10 ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
-      - name: fetch.py for 1.10
-        run: ./multivac/fetch.py --branch 1.10 tarantool/tarantool
-        working-directory: /mnt/storage/multivac
-
       - name: make csv
-        run: ./multivac/last_seen.py --branch master --branch 1.10 --branch 2.10
+        run: ./multivac/last_seen.py --branch master --branch 2.10 --branch 2.11
         working-directory: /mnt/storage/multivac
 
       - name: Write data to InfluxDB
