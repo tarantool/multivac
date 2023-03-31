@@ -7,6 +7,8 @@ import os
 import re
 import sys
 
+import requests
+
 from sensors.test_status import test_status_iter
 from sensors.failures import specific_failures, generic_failures, \
     compile_failure_specs
@@ -491,8 +493,15 @@ class GatherData:
                     'job_json': f"{s3_url}/workflow_run_jobs/{job_id}.json",
                     'job_log': f"{s3_url}/workflow_run_jobs/{job_id}.log",
                     'workflow_run_json': f"{s3_url}/workflow_runs/"
-                                         f"{job_info['workflow_run_id']}.json"
+                                         f"{job_info['workflow_run_id']}.json",
+                    'artifact_url': 'None'
                 }
+
+                # Store link to the artifact if artifact saved to S3
+                artifact_url = f"{s3_url}/artifacts/{job_info['workflow_run_id']}/{job_id}.zip"
+                if requests.head(f"http://{artifact_url}").status_code == 200:
+                    tags['artifact_url'] = artifact_url
+
                 time = github_time_to_unix(
                     self.gathered_data[job_id]['started_at'])
                 data = {
