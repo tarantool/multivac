@@ -497,6 +497,7 @@ class GatherData:
                     'artifact_url': 'None'
                 }
 
+                # Some changes
                 # Store link to the artifact if artifact saved to S3
                 artifact_url = f"{s3_url}/artifacts/{job_info['workflow_run_id']}/{job_id}.zip"
                 if requests.head(f"http://{artifact_url}").status_code == 200:
