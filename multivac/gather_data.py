@@ -56,7 +56,7 @@ def decolor(data):
 # start to parse the file from the end to speed up the process
 def reverse_readline(filename, buf_size=8192):
     """An iterator that returns the lines of a file in reverse order"""
-    with open(filename, encoding='utf8') as fh:
+    with open(filename, encoding='utf8', errors='replace') as fh:
         segment = None
         offset = 0
         fh.seek(0, os.SEEK_END)
