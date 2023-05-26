@@ -26,10 +26,6 @@ jobs:
         run: ./multivac/fetch.py --branch 2.11 ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
-      - name: fetch.py for 2.10
-        run: ./multivac/fetch.py --branch 2.10 ${{ matrix.repo }}
-        working-directory: /mnt/storage/multivac
-
       - name: Write data to InfluxDB
         env:
           INFLUX_JOB_BUCKET: ${{ secrets.INFLUX_JOB_BUCKET }}
