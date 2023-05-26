@@ -30,10 +30,6 @@ jobs:
         run: ./multivac/fetch.py --branch 2.10 ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
-      - name: make csv
-        run: ./multivac/last_seen.py --branch master --branch 2.10 --branch 2.11
-        working-directory: /mnt/storage/multivac
-
       - name: Write data to InfluxDB
         env:
           INFLUX_JOB_BUCKET: ${{ secrets.INFLUX_JOB_BUCKET }}
