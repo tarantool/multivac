@@ -48,7 +48,7 @@ jobs:
       - name: Get start and stop time
         run: |
           echo 'START_TIME<<EOF' >> $GITHUB_ENV
-            date -d 'last month' -I >> $GITHUB_ENV
+            date -d '2 month ago' -I >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
           echo 'STOP_TIME<<EOF' >> $GITHUB_ENV
             date -I >> $GITHUB_ENV
@@ -75,6 +75,7 @@ jobs:
         with:
           influx_token: ${{ secrets.INFLUX_TOKEN }}
           influx_url: ${{ secrets.INFLUX_URL }}
+          since: 60d
 
       - name: start deployment
         if: ${{ github.event_name == 'pull_request' }}

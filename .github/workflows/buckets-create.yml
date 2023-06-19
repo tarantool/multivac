@@ -34,7 +34,7 @@ jobs:
 
       - name: Create bucket
         run: |
-          # expire in 30 days = 2592000 seconds
+          # expire in 60 days = 5184000 seconds
           echo 'ARTIFACT_NAME<<EOF' >> $GITHUB_ENV
           curl --request POST \
             "${{ secrets.INFLUX_URL }}/api/v2/buckets" \
@@ -46,7 +46,7 @@ jobs:
               "retentionRules": [
                 {
                   "type": "expire",
-                  "everySeconds": 2592000,
+                  "everySeconds": 5184000,
                   "shardGroupDurationSeconds": 0
                 }
               ]
@@ -81,6 +81,7 @@ jobs:
           influx_token: ${{ secrets.INFLUX_TOKEN }}
           influx_url: ${{ secrets.INFLUX_URL }}
           deployment_url: ${{ secrets.DEPLOYMENT_URL }}
+          sinse: 60d
 
       - name: start deployment
         if: ${{ github.event_name == 'pull_request' }}
