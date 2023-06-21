@@ -25,13 +25,8 @@ if '/' not in args.repo_path:
     raise ValueError('repo_path must be in the form owner/repository')
 args.owner, args.repo = args.repo_path.split('/', 1)
 
-token_file = 'token.txt'
-if not os.path.exists(token_file):
-    raise RuntimeError('{file} is not exists'.format(file=token_file))
-if not os.path.isfile(token_file):
-    raise RuntimeError('{file} is not a regular file'.format(file=token_file))
-with open(token_file, 'r') as f:
-    token = f.read().strip()
+token = os.getenv('MULTIVAC_GITHUB_TOKEN')
+assert token, 'MULTIVAC_GITHUB_TOKEN is not set in environ variables'
 
 pid = os.getpid()
 startup_time = datetime.datetime.now(datetime.timezone.utc)

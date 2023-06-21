@@ -13,6 +13,7 @@ jobs:
     runs-on: ['self-hosted', 'multivac-crawler']
     env:
       LOG_STORAGE_BUCKET_URL: ${{ secrets.LOG_STORAGE_BUCKET_URL }}
+      MULTIVAC_GITHUB_TOKEN: ${{ secrets.MULTIVAC_GITHUB_TOKEN }}
     steps:
       - name: update repo
         run: git checkout master && git fetch && git reset --hard origin/master
