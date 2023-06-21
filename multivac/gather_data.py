@@ -271,12 +271,16 @@ class GatherData:
             if job['conclusion'] in ['skipped', 'cancelled']:
                 continue
 
+            job_id = job['id']
+
             # We have files sorted descending, so when we meet the first job
             # later than `since` argument, we know that all the following are
             # later too
             if self.since_seconds:
                 job_started = github_time_to_unix(job['started_at'])
                 if curr_time - job_started > self.since_seconds:
+                    print(f'Found job {job_id} older then {self.since_seconds} '
+                          f'(started at {job["started_at"]}), break...')
                     break
 
             if 'aarch64' in job['name']:
@@ -355,6 +359,7 @@ class GatherData:
                 'compiler_version': compiler,
                 'libc_version': LIBC_VERSIONS.get(os_version, 'unknown'),
             }
+            print(f'gathered job {job_id} started at {job["started_at"]}')
 
             if test_data:
                 gathered_job_data.update(
