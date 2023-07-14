@@ -24,7 +24,7 @@ jobs:
         working-directory: /mnt/storage/multivac
 
       - name: fetch.py for 2.11
-        run: ./multivac/fetch.py --branch 2.11 ${{ matrix.repo }}
+        run: ./multivac/fetch.py --branch release/2.11 ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
       - name: Write data to InfluxDB
