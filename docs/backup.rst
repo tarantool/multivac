@@ -23,7 +23,7 @@ careful with downloading this data.
 
     ..  code-block:: console
 
-        $  aws s3 --endpoint-url https://hb.bizmrg.com \
+        $  aws s3 --endpoint-url https://hb.vkcs.cloud \
             --profile your_profile_name \
             ls s3://multivac/tarantool/tarantool
 
@@ -31,6 +31,6 @@ careful with downloading this data.
 
     ..  code-block:: console
 
-        $ aws s3 --endpoint-url https://hb.bizmrg.com \
+        $ aws s3 --endpoint-url https://hb.vkcs.cloud \
             --profile your_profile_name \
             sync s3://multivac/tarantool/tarantool/workflow_run_jobs/ your_path

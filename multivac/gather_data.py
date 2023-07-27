@@ -472,7 +472,7 @@ class GatherData:
         influx_org = os.environ['INFLUX_ORG']
         data_list = []
         base_url = f'github.com/{self.repo_path}'
-        s3_url = f'multivac.hb.bizmrg.com/{self.repo_path}'
+        s3_url = f'multivac.hb.vkcs.cloud/{self.repo_path}'
         print('Writing data for tests table to InfluxDB...')
         for job_id in filter(
                 lambda x: 'failed_tests' in list(self.gathered_data[x].keys()),
