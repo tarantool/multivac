@@ -11,4 +11,4 @@ set -xe o pipefail -o nounset
 /usr/local/bin/aws \
   s3 sync /mnt/storage/multivac/${DIR} \
   s3://multivac/${DIR} \
-  --endpoint-url http://hb.bizmrg.com --acl public-read
+  --endpoint-url http://hb.vkcs.cloud --acl public-read
