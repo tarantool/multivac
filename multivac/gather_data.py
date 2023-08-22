@@ -248,6 +248,13 @@ class GatherData:
                 compiler = compiler_match.group(1)
         return compiler
 
+    @staticmethod
+    def get_time_in_queue(time_queued, time_started):
+        unix_time_queued = github_time_to_unix(time_queued)
+        unix_time_started = github_time_to_unix(time_started)
+        time_in_queue = unix_time_started - unix_time_queued
+        return time_in_queue
+
     def gather_data(self):
         # workflow_run_jobs/*[0-9].json
         workflow_files = glob.glob(
@@ -347,6 +354,7 @@ class GatherData:
                 'conclusion': job['conclusion'],
                 'queued_at': time_queued,
                 'started_at': job['started_at'],
+                'time_in_queue': self.get_time_in_queue(time_queued, job['started_at']),
                 'completed_at': job['completed_at'],
                 'platform': platform,
                 'runner_label': job['labels'],
@@ -396,7 +404,8 @@ class GatherData:
             }
 
             fields = {
-                'value': 1
+                'value': 1,
+                'time_in_queue': int(curr_job['time_in_queue'])
             }
 
             data = {
