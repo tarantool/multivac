@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 SEP_RE = r' +'
 TIMESTAMP_RE = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z'
-WORKER_ID_RE = r'\[\d+\]'
+WORKER_ID_RE = r'(?P<wid>\[\d+\])'
 TEST_RE = r'(?P<test>[^ ]+/[^ ]+(.test.lua|.test.sql|.test.py|.test|>))'
 CONF_RE = r'((?P<conf>[^ []+)|)'
 STATUS_RE = r'((Test timeout of \d+ secs reached\t)?\[ (?P<status>[^ ]+) \]|)'
@@ -32,6 +32,9 @@ HANG_RESULT_RE = re.compile(
     '^' +
     TIMESTAMP_RE + SEP_RE +
     r'--- ' + RESULT_RE + r'\b')
+
+# match lines with late test result: [ <worker_id> ] [ <result> ]
+LATE_STATUS = re.compile(r'.*(?P<wid>\[\d+\]) \[ (?P<res>[a-z]+) ]')
 
 
 def get_cache_filepath(log_filepath):
@@ -58,15 +61,29 @@ def test_status_iter(log_fh, cache_filepath=None):
         cache = []
 
     hang_detected = False
+
+    awaiting_tests = {}
     for line in log_fh:
         m = TEST_STATUS_LINE_RE.match(line)
+
         if m:
-            status = m.group('status') or 'fail'
+            if not m.group('status'):
+                awaiting_tests.update({m['wid']: (m['test'], m['conf'])})
+                continue
+            status = m.group('status')
             res = (m['test'], m['conf'], status)
             if cache_filepath:
                 cache.append(res)
             yield res
             continue
+        elif awaiting_tests:
+            status_match = LATE_STATUS.match(line)
+            if status_match:
+                matched_test = awaiting_tests.pop(status_match.group('wid'))
+                res = (matched_test[0],
+                       matched_test[1],
+                       status_match.group('res'))
+                yield res
 
         m = TEST_HANG_RE.match(line)
         if m:
@@ -90,6 +107,11 @@ def test_status_iter(log_fh, cache_filepath=None):
                     cache.append(res)
                 yield res
                 continue
+
+    # if there are tests with no result, save them as failed.
+    for wid in awaiting_tests:
+        res = awaiting_tests.get(wid)  # get tuple (test name, test conf)
+        yield (res[0], res[1], 'fail')
 
     if cache_filepath:
         with open(cache_filepath, 'w') as cache_fh:
