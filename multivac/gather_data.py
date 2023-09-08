@@ -249,11 +249,11 @@ class GatherData:
         return compiler
 
     @staticmethod
-    def get_time_in_queue(time_queued, time_started):
-        unix_time_queued = github_time_to_unix(time_queued)
+    def calc_time_diff(time_started: str, time_ended: str) -> float:
         unix_time_started = github_time_to_unix(time_started)
-        time_in_queue = unix_time_started - unix_time_queued
-        return time_in_queue
+        unix_time_ended = github_time_to_unix(time_ended)
+        time_diff = unix_time_ended - unix_time_started
+        return time_diff
 
     def gather_data(self):
         # workflow_run_jobs/*[0-9].json
@@ -354,8 +354,11 @@ class GatherData:
                 'conclusion': job['conclusion'],
                 'queued_at': time_queued,
                 'started_at': job['started_at'],
-                'time_in_queue': self.get_time_in_queue(time_queued, job['started_at']),
+                'time_in_queue': self.calc_time_diff(time_queued,
+                                                     job['started_at']),
                 'completed_at': job['completed_at'],
+                'job_duration': self.calc_time_diff(job['started_at'],
+                                                    job['completed_at']),
                 'platform': platform,
                 'runner_label': job['labels'],
                 'gc64': gc64,
@@ -405,7 +408,8 @@ class GatherData:
 
             fields = {
                 'value': 1,
-                'time_in_queue': int(curr_job['time_in_queue'])
+                'time_in_queue': int(curr_job['time_in_queue']),
+                'job_duration': int(curr_job['job_duration']),
             }
 
             data = {
