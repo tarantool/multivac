@@ -21,6 +21,7 @@ sys.path.append(PROJECT_DIR)
 COLOR_RE = re.compile('\033' + r'\[\d(?:;\d\d)?m')
 COMPILER_RE = re.compile(r'C compiler identification is '
                          r'(\S* \d*.\d*.\d*)')
+DATETIME_RE = re.compile(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}')
 
 # According to distrowatch.com and repology.org/project/glibc/versions
 LIBC_VERSIONS = {
@@ -109,6 +110,14 @@ def github_time_to_unix(time: str) -> float:
         f"{time.rstrip('Z')}+00:00")
     time_to_unix = datetime.timestamp(time_to_datetime)
     return time_to_unix
+
+
+def get_log_datetime(log_line: str) -> str:
+    # Get ISO format date and time from the log line
+    datetime_match = DATETIME_RE.search(log_line)
+    if datetime_match:
+        return f'{datetime_match.group(0)}Z'
+    return ''
 
 
 # https://github.com/tarantool/tarantool/tree/master/.github/workflows
@@ -318,7 +327,10 @@ class GatherData:
             except FileNotFoundError:
                 print(f'No logs for job {job_id}, {job["html_url"]}')
             else:
-                time_queued = log_file_as_list[0][0:19] + 'Z'
+                # To get exact time the job was queued, we need to get the time
+                # in the first line of the log file
+                time_queued = get_log_datetime(log_file_as_list[0]) \
+                    or time_queued
                 test_data = self.get_test_data(log_file_as_list)
                 debug = self.get_release_or_debug(log_file_as_list)
                 runner_version = self.get_runner_version(log_file_as_list)
