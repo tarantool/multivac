@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         repo: [ 'tarantool/tarantool']
+        branch: ['master', 'release/2.11', 'release/3.2', 'release/3.3', 'release/3.4']
     runs-on: ['self-hosted', 'multivac-crawler']
     env:
       LOG_STORAGE_BUCKET_URL: ${{ secrets.LOG_STORAGE_BUCKET_URL }}
@@ -19,12 +20,8 @@ jobs:
         run: git checkout master && git fetch && git reset --hard origin/master
         working-directory: /mnt/storage/multivac
 
-      - name: fetch.py for master
-        run: ./multivac/fetch.py --branch master ${{ matrix.repo }}
-        working-directory: /mnt/storage/multivac
-
-      - name: fetch.py for 2.11
-        run: ./multivac/fetch.py --branch release/2.11 ${{ matrix.repo }}
+      - name: fetch.py for ${{ matrix.branch }}
+        run: ./multivac/fetch.py --branch ${{ matrix.branch }} ${{ matrix.repo }}
         working-directory: /mnt/storage/multivac
 
       - name: Write data to InfluxDB
