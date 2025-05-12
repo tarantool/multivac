@@ -104,12 +104,12 @@ output_fh = None
 
 
 def write_line(line):
-    global output_fh
+    global output_fh  # noqa: F824
     print(line, file=output_fh)
 
 
 def write_csv():
-    global output_fh
+    global output_fh  # noqa: F824
 
     print('Statistics for the following log intervals\n', file=sys.stderr)
     for branch in branch_list:
