@@ -96,7 +96,10 @@ def http_get(url, params=None):
         else:
             fmt = '[Don\'t log response with unknown Content-Type: {}]'
             response_text = fmt.format(content_type)
-        r.raise_for_status()
+        if r.status_code != 404:
+            r.raise_for_status()
+        else:
+            info(f"======================ERROR 404 FOR URL======================\n{url}")
     else:
         response_text = '[EMPTY LOG!]'
 
